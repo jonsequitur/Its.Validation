@@ -11,13 +11,29 @@ namespace Its.Validation
     /// <typeparam name="T"> The <see cref="Type" /> of the error code. </typeparam>
     public class ErrorCode<T>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ErrorCode&lt;T&gt;"/> class.
+        /// </summary>
+        /// <param name="code">The code.</param>
         public ErrorCode(T code)
         {
             Value = code;
         }
 
+        /// <summary>
+        /// Gets or sets the error code value.
+        /// </summary>
+        /// <value>
+        /// The value.
+        /// </value>
         public T Value { get; set; }
 
+        /// <summary>
+        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this instance.
+        /// </returns>
         public override string ToString()
         {
             if (Value != null)

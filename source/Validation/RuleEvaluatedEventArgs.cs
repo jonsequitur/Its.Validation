@@ -9,6 +9,10 @@ namespace Its.Validation
     /// </summary>
     public class RuleEvaluatedEventArgs : EventArgs
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RuleEvaluatedEventArgs"/> class.
+        /// </summary>
+        /// <param name="ruleEvaluation">The rule evaluation.</param>
         public RuleEvaluatedEventArgs(RuleEvaluation ruleEvaluation)
         {
             if (ruleEvaluation == null)

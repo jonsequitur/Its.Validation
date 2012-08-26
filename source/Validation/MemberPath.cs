@@ -7,15 +7,28 @@ using System.Linq.Expressions;
 
 namespace Its.Validation
 {
+    /// <summary>
+    /// Describes the dot-notation path through an object graph to a specific member.
+    /// </summary>
     internal class MemberPath
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MemberPath"/> class.
+        /// </summary>
+        /// <param name="value">The value.</param>
         public MemberPath(string value)
         {
             Value = value ?? string.Empty;
         }
 
+        /// <summary>
+        /// Gets the member path value.
+        /// </summary>
         public string Value { get; private set; }
 
+        /// <summary>
+        /// Determines a member path given an Expression.
+        /// </summary>
         internal static string FromExpression(LambdaExpression expression)
         {
             var nameParts = new Stack<string>();
@@ -40,12 +53,9 @@ namespace Its.Validation
                 }
             }
 
-            if (nameParts.Count > 0)
-            {
-                return nameParts.Aggregate((left, right) => left + right).TrimStart('.');
-            }
-
-            return string.Empty;
+            return nameParts.Count > 0
+                       ? nameParts.Aggregate((left, right) => left + right).TrimStart('.')
+                       : string.Empty;
         }
     }
 }

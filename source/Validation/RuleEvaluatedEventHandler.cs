@@ -2,5 +2,10 @@
 
 namespace Its.Validation
 {
-    public delegate void RuleEvaluatedEventHandler(object sender, RuleEvaluatedEventArgs argses);
+    /// <summary>
+    /// Represents the method that will handle a <see cref="ValidationScope.RuleEvaluated" /> event.
+    /// </summary>
+    /// <param name="sender">The sender.</param>
+    /// <param name="args">The <see cref="Its.Validation.RuleEvaluatedEventArgs"/> instance containing the event data.</param>
+    public delegate void RuleEvaluatedEventHandler(object sender, RuleEvaluatedEventArgs args);
 }

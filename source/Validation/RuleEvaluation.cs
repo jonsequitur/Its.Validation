@@ -43,11 +43,7 @@ namespace Its.Validation
         {
             get
             {
-                if (parameters == null)
-                {
-                    parameters = new Dictionary<string, object>();
-                }
-                return parameters;
+                return parameters ?? (parameters = new Dictionary<string, object>());
             }
             internal set
             {
