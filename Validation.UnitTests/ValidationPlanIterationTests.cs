@@ -3,16 +3,15 @@
 using System;
 using System.Linq;
 using Its.Validation.Configuration;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 
 namespace Its.Validation.UnitTests
 {
-    [TestClass, TestFixture]
+    [TestFixture]
     public class ValidationPlanIterationTests
     {
-        [Test, TestMethod]
+        [Test]
         public void Flat_plan_has_correct_sequence()
         {
             var plan = new ValidationPlan<string>
@@ -26,7 +25,7 @@ namespace Its.Validation.UnitTests
             Assert.That(plan.AllRules().IsSameSequenceAs(plan));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Flat_plan_with_chained_and_ordered_dependencies_has_correct_sequence()
         {
             var rule1 = Validate.That<string>(s => true).WithErrorMessage("1");
@@ -45,7 +44,7 @@ namespace Its.Validation.UnitTests
             Assert.That(plan.AllRules().IsSameSequenceAs(new[] { rule1, rule2, rule3, rule4 }));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Flat_plan_with_chained_and_unordered_dependencies_has_correct_sequence()
         {
             var rule1 = Validate.That<string>(s => true).WithErrorMessage("1");
@@ -64,7 +63,7 @@ namespace Its.Validation.UnitTests
             Assert.That(plan.AllRules().IsSameSequenceAs(new[] { rule1, rule2, rule3, rule4 }));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Flat_plan_with_dependencies_on_rules_not_in_plan_has_correct_sequence()
         {
             var rule1 = Validate.That<string>(s => true).WithErrorCode("1");
@@ -82,7 +81,7 @@ namespace Its.Validation.UnitTests
             Assert.That(plan.AllRules().IsSameSequenceAs(new[] { rule1, rule2, rule3, rule4 }));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Plan_with_dependency_from_nested_plan_to_outer_rule_has_correct_sequence()
         {
             var rule1_1 = Validate.That<string>(s => true).WithErrorMessage("1.1");
@@ -121,7 +120,7 @@ namespace Its.Validation.UnitTests
             }));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Plan_with_dependency_from_inner_rule_of_nested_plan_to_outer_rule_has_correct_sequence()
         {
             var rule1_1 = Validate.That<string>(s => true).WithErrorMessage("1.1");
@@ -165,7 +164,7 @@ namespace Its.Validation.UnitTests
                 }));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Nested_plan_with_multiple_dependencies_on_same_rule_has_correct_sequence()
         {
             var rule1_1 = Validate.That<string>(s => true).WithErrorMessage("1.1");
@@ -209,7 +208,7 @@ namespace Its.Validation.UnitTests
                 }));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Nested_plan_without_dependencies_has_correct_sequence()
         {
             var rule1_1 = Validate.That<string>(s => true).WithErrorMessage("1.1");

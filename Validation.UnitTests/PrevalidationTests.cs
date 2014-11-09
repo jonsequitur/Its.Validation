@@ -5,23 +5,22 @@ using System.Collections.Generic;
 using System.Linq;
 using Its.Validation.Configuration;
 using Its.Validation.UnitTests.TestClasses;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 
 namespace Its.Validation.UnitTests
 {
-    [TestClass, TestFixture]
+    [TestFixture]
     public class PrevalidationTests
     {
-        [TestInitialize, SetUp]
+        [SetUp]
         public void TestInitialize()
         {
             MessageGenerator.Current = null;
         }
 
-        [Test, TestMethod]
+        [Test]
         public void When_individual_ValidationRule_Check_is_called_with_no_ValidationScope_then_preconditions_are_checked()
         {
             var rule = Validate.That<string>(s => s.Length > 5).When(s => s != null);
@@ -29,7 +28,7 @@ namespace Its.Validation.UnitTests
             Assert.IsTrue(rule.Check(null));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Rules_can_be_excluded_based_on_precondition_rule_failing()
         {
             var nullRule = Validate.That<Species>(s => s.Name != null);
@@ -49,7 +48,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(nullRule, report.Failures.First().Rule);
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Intermediate_preconditions_that_return_false_prevent_later_rules_from_being_evaluated()
         {
             var a = Validate.That<string>(s => false);
@@ -71,7 +70,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(0, c.CallCount);
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void
             Intermediate_preconditions_that_return_true_prevent_later_rules_from_being_evaluated_using_mock_validation_rule
             ()
@@ -95,7 +94,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(0, c.CallCount);
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void
             Intermediate_preconditions_that_return_true_prevent_later_rules_from_being_evaluated_using_actual_validation_rule
             ()
@@ -124,7 +123,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(0, report.Failures.Count());
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Plans_can_be_excluded_based_on_precondition_rule_failing()
         {
             var nullRule = Validate.That<Species>(s => s.Name != null);
@@ -148,7 +147,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(nullRule, report.Failures.First().Rule);
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void When_func_precondition_fails_and_is_not_in_plan_no_validation_failure_is_created_for_it()
         {
             Func<string, bool> preconditionThatFails = s => false;
@@ -166,7 +165,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(0, report.Failures.Count());
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void When_func_precondition_succeeds_and_is_not_in_plan_no_validation_success_is_created_for_it()
         {
             Func<string, bool> preconditionThatSucceeds = s => true;
@@ -184,7 +183,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(0, report.Successes.Count());
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void When_rule_precondition_fails_and_is_not_in_plan_no_validation_failure_is_created_for_it()
         {
             var preconditionThatFails = Validate.That<string>(s => false);
@@ -202,7 +201,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(0, report.Failures.Count());
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Rules_can_be_excluded_based_on_precondition_failing_precondition_is_not_in_validation_plan()
         {
             Func<Species, bool> nullRule = s => s.Name != null;
@@ -219,7 +218,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(0, report.Failures.Count());
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void When_when_overload_accepting_func_is_used_no_validation_failure_is_generated()
         {
             var dodo = new Species();
@@ -237,7 +236,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(0, report.Failures.Count());
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void When_precondition_is_first_class_rule_in_plan_precondition_is_only_evaluated_once()
         {
             var precondition = new Mock<IValidationRule<Species>>();
@@ -262,7 +261,7 @@ namespace Its.Validation.UnitTests
             precondition.Verify(pc => pc.Check(It.IsAny<Species>()), Times.Once());
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void
             When_precondition_is_first_class_rule_in_plan_and_has_different_error_code_assigned_precondition_is_only_evaluated_once
             ()
@@ -292,7 +291,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(1, count);
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void
             When_precondition_is_not_in_plan_and_precondition_succeeds_precondition_is_only_evaluated_once()
         {
@@ -321,7 +320,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(1, count);
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void When_precondition_is_not_in_plan_and_precondition_fails_precondition_is_only_evaluated_once
             ()
         {
@@ -349,7 +348,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(1, count);
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void When_precondition_is_used_in_nested_plans_it_is_not_reevaluated()
         {
             var count = 0;
@@ -376,7 +375,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(1, count);
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void When_precondition_is_used_in_iterative_rule_it_is_re_evaluated_for_different_targets()
         {
             var notNegative = Validate.That<int>(i => i.As("j") > 0).WithMessage("{j} is too low");
@@ -397,7 +396,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(2, report.Failures.Count(f => f.Rule == notHigherThan10));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void When_precondition_and_cloned_precondition_are_both_used_they_are_evaluated_as_equivalent()
         {
             var notEmptyRule = Validate.That<string>(s => !string.IsNullOrEmpty(s));
@@ -416,7 +415,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(1, report.Failures.Count(f => f.ErrorCode == "too long!"));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void
             When_specifying_multiple_preconditions_and_one_precondition_fails_subsequent_preconditions_are_not_evaluated
             ()
@@ -443,7 +442,7 @@ namespace Its.Validation.UnitTests
             Assert.True(!report.Failures.Any(f => f.Rule == rule));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Multiple_rules_dependent_on_same_precondition_are_evaluated_when_precondition_is_cloned()
         {
             var precondition = Validate.That<string>(s => s != null);
@@ -462,7 +461,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(1, report.Failures.Count(f => f.ErrorCode == "b"));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Multiple_rules_dependent_on_same_precondition_are_evaluated_when_precondition_is_uncloned()
         {
             var precondition = Validate.That<string>(s => s != null);
@@ -481,7 +480,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(1, report.Failures.Count(f => f.ErrorCode == "b"));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void
             When_rule_is_declared_first_as_precondition_then_as_rule_only_one_validation_failure_is_generated()
         {
@@ -505,7 +504,7 @@ namespace Its.Validation.UnitTests
         }
 
         [NUnit.Framework.Ignore("Scenario not currently supported"), Microsoft.VisualStudio.TestTools.UnitTesting.Ignore]
-        [Test, TestMethod]
+        [Test]
         public virtual void When_rule_is_declared_first_as_precondition_then_as_rule_it_is_only_evaluated_once()
         {
             var precondition = new MockValidationRule<string>(false);
@@ -527,7 +526,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(1, precondition.CallCount);
         }
 
-        [Test, TestMethod]
+        [Test]
         public void A_single_rule_with_a_precondition_is_checked_by_Check_overload_1()
         {
             var rule = Validate.That<string>(s =>
@@ -539,7 +538,7 @@ namespace Its.Validation.UnitTests
             rule.Check(null);
         }
 
-        [Test, TestMethod]
+        [Test]
         public void A_single_rule_with_a_precondition_is_checked_by_Check_overload_2()
         {
             var rule = Validate.That<string>(s =>

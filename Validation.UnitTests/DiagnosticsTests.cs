@@ -4,16 +4,15 @@ using System;
 using System.Linq;
 using Its.Validation.Configuration;
 using Its.Validation.UnitTests.TestClasses;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 
 namespace Its.Validation.UnitTests
 {
-    [TestClass, TestFixture]
+    [TestFixture]
     public class DiagnosticsTests
     {
-        [Test, TestMethod]
+        [Test]
         public virtual void When_using_DebugMessageGenerator_extension_values_are_written_to_message()
         {
             var plan = new ValidationPlan<Species>(new DebugMessageGenerator())
@@ -32,7 +31,7 @@ namespace Its.Validation.UnitTests
             Assert.That(msg.Contains("42"));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void When_using_DebugMessageGenerator_extension_types_are_written_to_message()
         {
             var plan = new ValidationPlan<Species>(new DebugMessageGenerator())
@@ -50,7 +49,7 @@ namespace Its.Validation.UnitTests
             Assert.That(msg.Contains("ErrorCode"));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void DebugMessageGenerator_accepts_validation_failure_having_null_rule()
         {
             var generator = new DebugMessageGenerator();

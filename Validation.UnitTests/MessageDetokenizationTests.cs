@@ -1,28 +1,27 @@
 // Copyright (c) Microsoft Corporation. All rights reserved. See license.txt in the project root for license information.
 
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 
 namespace Its.Validation.UnitTests
 {
-    [TestClass, TestFixture]
+    [TestFixture]
     public class MessageDetokenizationTests
     {
-        [Test, TestMethod]
+        [Test]
         public virtual void Detokenize_does_not_throw_on_null_parameters_dictionary()
         {
             Assert.DoesNotThrow(() => MessageGenerator.Detokenize(string.Empty, null));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Detokenize_returns_empty_string_on_null_message_template()
         {
             Assert.AreEqual(string.Empty, MessageGenerator.Detokenize(null, new Dictionary<string, object>()));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Detokenize_returns_empty_string_on_empty_string_message_template()
         {
             Assert.AreEqual(string.Empty,
@@ -30,14 +29,14 @@ namespace Its.Validation.UnitTests
         }
 
         [NUnit.Framework.Ignore("Fails, but may be a valid design change"), Microsoft.VisualStudio.TestTools.UnitTesting.Ignore]
-        [Test, TestMethod]
+        [Test]
         public virtual void When_parameters_are_missing_then_Detokenize_returns_empty_string()
         {
             const string messageTemplate = "This {parameter} is not available";
             Assert.That(MessageGenerator.Detokenize(messageTemplate, new Dictionary<string, object>()), Is.EqualTo(""));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Detokenize_can_tokenize_null_parameter_values()
         {
             var parameters = new Dictionary<string, object>
@@ -51,7 +50,7 @@ namespace Its.Validation.UnitTests
                 MessageGenerator.Detokenize("This is {null} and that is {notnull}", parameters));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void MessageTemplate_returns_template_directly_if_passed_a_null_RuleEvaluation()
         {
             var templateString = "{this} and {that}";
@@ -62,7 +61,7 @@ namespace Its.Validation.UnitTests
             Assert.That(message, Is.EqualTo(templateString));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void FailureMessageTemplate_returns_template_directly_if_passed_a_null_RuleEvaluation()
         {
             var templateString = "{this} and {that}";
@@ -73,7 +72,7 @@ namespace Its.Validation.UnitTests
             Assert.That(message, Is.EqualTo(templateString));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void SuccessMessageTemplate_returns_template_directly_if_passed_a_null_RuleEvaluation()
         {
             var templateString = "{this} and {that}";
@@ -84,7 +83,7 @@ namespace Its.Validation.UnitTests
             Assert.That(message, Is.EqualTo(templateString));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void FailureMessageTemplate_cannot_receive_null_RuleEvaluation()
         {
             var messageTemplate = new FailureMessageTemplate(e =>
@@ -96,7 +95,7 @@ namespace Its.Validation.UnitTests
             messageTemplate.GetMessage(null);
         }
 
-        [Test, TestMethod]
+        [Test]
         public void SuccessMessageTemplate_cannot_receive_null_RuleEvaluation()
         {
             var messageTemplate = new SuccessMessageTemplate(e =>

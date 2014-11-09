@@ -8,13 +8,12 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Its.Validation.Configuration;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 
 namespace Its.Validation.UnitTests
 {
-    [TestClass, TestFixture]
+    [TestFixture]
     public class AsyncTests
     {
         // TODO: (AsyncTests) simulate web access rather than make real calls
@@ -29,7 +28,7 @@ namespace Its.Validation.UnitTests
             InitializeTwitterPlan();
         }
 
-        [Test, TestMethod]
+        [Test]
         public void When_items_are_validated_in_parallel_the_rule_evaluations_are_reported_correctly()
         {
             DescribeThread();
@@ -60,7 +59,7 @@ namespace Its.Validation.UnitTests
             Console.WriteLine(string.Format("On thread {0} (name: {1})", Thread.CurrentThread.ManagedThreadId, Thread.CurrentThread.Name));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void
             When_the_same_plan_is_run_on_two_threads_simultaneously_they_each_report_success_and_failure_correctly()
         {
@@ -82,7 +81,7 @@ namespace Its.Validation.UnitTests
             Assert.That(fail.Result.HasFailures, Is.True);
         }
 
-        [Test, TestMethod]
+        [Test]
         public void When_the_same_plan_is_run_on_multiple_threads_simultaneously_they_each_report_parameters_correctly()
         {
             var barrier = new Barrier(20);
@@ -115,7 +114,7 @@ namespace Its.Validation.UnitTests
                                                 t => t.Result.Failures.Any(f => f.Parameters["s"].Equals(i.ToString()))));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void ToTask_converts_ValidationPlan_without_rule_preconditions_to_Task_that_reports_correct_result()
         {
             var task = isTwitterFreeUrl.ExecuteAsync("http://twitter.com");
@@ -124,7 +123,7 @@ namespace Its.Validation.UnitTests
             Assert.That(report.HasFailures, Is.True);
         }
 
-        [Test, TestMethod]
+        [Test]
         public void ExecuteAsync_converts_ValidationPlan_without_rule_preconditions_to_Task_that_reports_correct_result()
         {
             var task = isTwitterFreeUrl.ExecuteAsync("http://twitter.com");
@@ -134,7 +133,7 @@ namespace Its.Validation.UnitTests
             Assert.That(report.HasFailures, Is.True);
         }
 
-        [Test, TestMethod]
+        [Test]
         public void ToTask_converts_ValidationPlan_without_rule_preconditions_to_Task_that_reports_correct_rule_executions()
         {
             var task = isTwitterFreeUrl.ExecuteAsync("http://twitter.com");
@@ -144,7 +143,7 @@ namespace Its.Validation.UnitTests
             Assert.That(report.Failures.Any());
         }
 
-        [Test, TestMethod]
+        [Test]
         public void ToTask_converts_ValidationPlan_without_rule_preconditions_to_Task_that_reports_correctly_parameterized_message()
         {
             var task = isTwitterFreeUrl.ExecuteAsync("http://twitter.com");
@@ -153,7 +152,7 @@ namespace Its.Validation.UnitTests
             Assert.That(report.Failures.Any(f => f.Message.Contains("http://twitter.com")));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void ToTask_converts_ValidationPlan_with_rule_preconditions_to_Task_that_reports_correct_rule_executions()
         {
             var task = isReachableUrl.ExecuteAsync("http://google.com/ugiuagkjbsfksjdf");
@@ -163,7 +162,7 @@ namespace Its.Validation.UnitTests
             Assert.That(report.Failures.Any());
         }
 
-        [Test, TestMethod]
+        [Test]
         public void ToTask_converts_ValidationPlan_with_rule_preconditions_to_Task_that_reports_correctly_parameterized_message()
         {
             var task = isReachableUrl.ExecuteAsync("http://google.com/ugiuagkjbsfksjdf");
@@ -173,7 +172,7 @@ namespace Its.Validation.UnitTests
         }
 
         [NUnit.Framework.Ignore("In development"), Microsoft.VisualStudio.TestTools.UnitTesting.Ignore]
-        [Test, TestMethod]
+        [Test]
         public void Rules_within_a_ValidationPlan_can_use_APM_signatures_and_run_asynchronously()
         {
             var hasAwesomeTag = Validate.Async<string>(
@@ -212,7 +211,7 @@ namespace Its.Validation.UnitTests
         }
 
         [NUnit.Framework.Ignore("In development"), Microsoft.VisualStudio.TestTools.UnitTesting.Ignore]
-        [Test, TestMethod]
+        [Test]
         public void Continuation_rules_do_not_start_setup_tasks_when_precondition_fails()
         {
             // TODO: (Continuation_rules_do_not_start_setup_tasks_when_precondition_fails) 
@@ -239,7 +238,7 @@ namespace Its.Validation.UnitTests
         }
 
         [NUnit.Framework.Ignore("In development"), Microsoft.VisualStudio.TestTools.UnitTesting.Ignore]
-        [Test, TestMethod]
+        [Test]
         public void Rules_within_a_ValidationPlan_can_use_APM_signatures_and_run_synchronously()
         {
             var hasAwesomeTag = Validate.Async<string>(

@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Its.Validation.Configuration;
 using Its.Validation.UnitTests.TestClasses;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
@@ -13,22 +12,22 @@ using StringAssert = NUnit.Framework.StringAssert;
 
 namespace Its.Validation.UnitTests
 {
-    [TestClass, TestFixture]
+    [TestFixture]
     public class ValidationReportingTests
     {
-        [TestInitialize, SetUp]
+        [SetUp]
         public void TestInitialize()
         {
             MessageGenerator.Current = null;
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Static_default_MessageGenerator_is_not_null()
         {
             Assert.IsNotNull(MessageGenerator.Current);
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void ValidationFailures_use_MessageGenerator_assigned_to_ValidationPlan()
         {
             var messageGenerator = new Mock<IValidationMessageGenerator>();
@@ -45,13 +44,13 @@ namespace Its.Validation.UnitTests
             messageGenerator.VerifyAll();
         }
 
-        [Test, TestMethod]
+        [Test]
         public void When_ValidationPlan_ctor_receives_null_message_generator_it_throws()
         {
             Assert.Throws<ArgumentNullException>(() => new ValidationPlan<string>((IValidationMessageGenerator) null));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Can_customize_message_at_the_framework_level()
         {
             var messageGenerator = new Mock<IValidationMessageGenerator>();
@@ -64,7 +63,7 @@ namespace Its.Validation.UnitTests
             Assert.IsTrue(msg == "here i am");
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Can_customize_message_differently_for_the_same_rule_in_different_plans()
         {
             var generator1 = new Mock<IValidationMessageGenerator>();
@@ -90,7 +89,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual("two", report2.Failures.First().Message);
         }
 
-        [Test, TestMethod]
+        [Test]
         public void WithErrorMessage_lambda_overload_can_access_the_FailedEvaluation_to_build_a_message()
         {
             var isCat = Validate.That<Species>(c => c.Name == "Felis silvestris".As("species"))
@@ -101,7 +100,7 @@ namespace Its.Validation.UnitTests
             Assert.That(report.Failures.Single().Message, Is.EqualTo("We're looking for a Felis silvestris, and you passed a Iguana iguana"));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void WithErrorMessage_lambda_anonymous_message_generator_is_cloned()
         {
             var isCat = Validate.That<Species>(c => c.Name == "Felis silvestris".As("species"))
@@ -113,7 +112,7 @@ namespace Its.Validation.UnitTests
             Assert.That(report.Failures.Single().Message, Is.EqualTo("We're looking for a Felis silvestris, and you passed a Iguana iguana"));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void WithErrorMessage_lambda_overload_can_access_the_SuccessfulEvaluation_to_build_a_message()
         {
             var isCat = Validate.That<Species>(c => c.Name == "Felis silvestris")
@@ -124,7 +123,7 @@ namespace Its.Validation.UnitTests
             Assert.That(report.Successes.Single().Message, Is.EqualTo("Thank you for this lovely Felis silvestris"));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Same_rule_in_different_plans_can_have_different_error_codes()
         {
             var rule = Validate.That<string>(
@@ -150,7 +149,7 @@ namespace Its.Validation.UnitTests
             Assert.IsTrue(report.Failures.Any(f => f.ErrorCode == "string contains B"));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void MemberPath_can_be_set_differently_for_the_same_rule_in_different_contexts()
         {
             var nameNotEmpty =
@@ -174,7 +173,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(1, report.Failures.Where(f => f.MemberPath == "subspecies").Count());
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Extension_can_be_obtained_from_another_rule_farther_up_the_execution_stack()
         {
             var family = new Family
@@ -213,7 +212,7 @@ namespace Its.Validation.UnitTests
                      && f.MemberPath == "Species"));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Innermost_extension_is_chosen_when_resolving_from_stack_of_ValidationPlans()
         {
             var rule = new ValidationPlan<string>
@@ -237,7 +236,7 @@ namespace Its.Validation.UnitTests
             Assert.That(report.Failures.ElementAt(2).MessageTemplate == "three");
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Innermost_extension_is_chosen_when_resolving_from_stack_of_plans_and_rules()
         {
             var rule = new ValidationPlan<string>
@@ -260,7 +259,7 @@ namespace Its.Validation.UnitTests
             Assert.That(report.Failures.ElementAt(2).MessageTemplate == "three");
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Innermost_extension_is_chosen_when_resolving_from_stack_of_plans_and_multiple_levels_of_rules()
         {
             var rule = new ValidationPlan<string>
@@ -282,7 +281,7 @@ namespace Its.Validation.UnitTests
             Assert.That(report.Failures.ElementAt(2).MessageTemplate == "three");
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void ErrorCode_can_be_set_differently_for_the_same_rule_in_different_contexts()
         {
             var nameNotEmpty =
@@ -310,7 +309,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(1, report.Failures.Count(f => f.ErrorCode == "IndividualsSpeciesNameCannotBeEmpty"));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void When_multiple_specifications_of_error_code_are_made_last_one_overrides()
         {
             var individualIsNamed = Validate.That<Individual>(i => i.Name != null).WithErrorCode("not named (1)");
@@ -334,7 +333,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(1, report.Failures.Count(f => f.ErrorCode == "not named (2)"));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Validation_parameters_can_be_written_to_error_message()
         {
             var rule = Validate
@@ -346,7 +345,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual("must be less than 42", report.Failures.First().Message);
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Validation_parameters_can_be_transformed_and_then_written_to_error_message()
         {
             var rule = Validate
@@ -358,7 +357,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual("must be less than forty-two", report.Failures.First().Message);
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Multiple_validation_parameters_can_be_written_to_error_message_with_params_out_of_order()
         {
             var rule = Validate
@@ -372,7 +371,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual("must be between 0 and 365", failure.Message);
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Multiple_validation_parameters_can_be_written_to_error_message_with_params_in_order()
         {
             var rule = Validate
@@ -384,7 +383,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual("must be between 0 and 365", report.Failures.First().Message);
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Parameters_can_be_written_to_message_nested_validations()
         {
             var cat = new Species("cat");
@@ -411,7 +410,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual("Expected all cats but found a dog", failure.Message);
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Parameters_are_retained_by_failure_after_scope_exits()
         {
             var plan = new ValidationPlan<Species>
@@ -426,7 +425,7 @@ namespace Its.Validation.UnitTests
             Assert.That(failure.Parameters.Count, Is.GreaterThanOrEqualTo(1));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Parameters_are_retained_by_failure_after_nested_scope_exits()
         {
             var plan = new ValidationPlan<Species>
@@ -445,7 +444,7 @@ namespace Its.Validation.UnitTests
             Assert.That(failure.Parameters.Count, Is.GreaterThanOrEqualTo(1));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Parameters_are_collected_from_nested_scopes()
         {
             var plan = new ValidationPlan<Species>
@@ -464,7 +463,7 @@ namespace Its.Validation.UnitTests
             Assert.That(failure.Parameters.Count, Is.GreaterThanOrEqualTo(1));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Parameters_can_be_written_to_message_nested_validations_multiple_failures()
         {
             var cat = new Species("cat");
@@ -491,7 +490,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(1, report.Failures.Where(f => f.Message == "Expected all cats but found a deer").Count());
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Parameters_are_flushed_after_rule_evaluation_when_rule_passes()
         {
             var plan = new ValidationPlan<string>
@@ -505,7 +504,7 @@ namespace Its.Validation.UnitTests
             Assert.IsFalse(report.Failures.First().Parameters.ContainsKey("pass"));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void IValidationRule_when_check_passes_no_failures_are_added_to_report()
         {
             var rule = new Mock<IValidationRule<string>>();
@@ -518,7 +517,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(0, report.Failures.Count());
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void IValidationRule_when_check_fails_failures_are_added_to_report()
         {
             var rule = new Mock<IValidationRule<string>>();
@@ -532,7 +531,7 @@ namespace Its.Validation.UnitTests
             Assert.IsTrue(report.Failures.First().Rule == rule.Object);
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Composability_via_execution_stack()
         {
             var isAGoodNameForADog = Validate.That<string>(
@@ -555,7 +554,7 @@ namespace Its.Validation.UnitTests
             Assert.That(failures.Single().MemberPath, Is.EqualTo("Name"));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Parameter_formatting_can_be_specified_using_colon_notation_for_dates()
         {
             var date = DateTime.Now;
@@ -571,7 +570,7 @@ namespace Its.Validation.UnitTests
                 MessageGenerator.Detokenize("Today is {today:D}", parameters));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void ValidationReport_contains_rules_that_were_called()
         {
             var plan = new ValidationPlan<string>();
@@ -592,7 +591,7 @@ namespace Its.Validation.UnitTests
             }
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void ValidationReport_contains_nested_rules_that_were_called()
         {
             var plan = new ValidationPlan<Species>
@@ -611,7 +610,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(1 + species.Individuals.Count(), report.RulesExecuted.Count());
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void ValidationReport_contains_referenced_rules_that_were_called()
         {
             var hasName = Validate.That<Individual>(ind => ind.Name != null);
@@ -629,7 +628,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(11, report.RulesExecuted.Count());
         }
 
-        [Test, TestMethod]
+        [Test]
         public void ValidationReport_contains_all_rule_evaluations()
         {
             var hasName = Validate.That<Individual>(ind => ind.Name != null);
@@ -647,7 +646,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(11, report.Evaluations.Count());
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Successful_rule_evaluations_have_informative_messages_containing_templated_values()
         {
             var hasIndividuals = Validate.That<Species>(s => s.Individuals.Count().As("count") > 0)
@@ -661,7 +660,7 @@ namespace Its.Validation.UnitTests
             StringAssert.Contains("9000", successfulEvaluation.Message);
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Successful_rule_evaluations_have_accessible_parameters()
         {
             var hasIndividuals = Validate
@@ -681,14 +680,14 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(9000, evaluation.Parameters["count"]);
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void New_ValidationFailure_parameters_property_is_not_null()
         {
             var failure = new FailedEvaluation();
             Assert.IsNotNull(failure.Parameters);
         }
 
-        [Test, TestMethod]
+        [Test]
         public void ValidationReport_Failures_does_not_report_internal_failures()
         {
             var report = new ValidationReport(new[] { new FailedEvaluation { IsInternal = true } });
@@ -696,7 +695,7 @@ namespace Its.Validation.UnitTests
             Assert.That(report.Evaluations.Count(), Is.EqualTo(0));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void ValidationReport_Evaluations_does_not_report_internal_failures()
         {
             var report = new ValidationReport(new[] { new FailedEvaluation { IsInternal = true } });
@@ -704,7 +703,7 @@ namespace Its.Validation.UnitTests
             Assert.That(report.Evaluations.Count(), Is.EqualTo(0));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void ValidationReport_SuccessfulEvaluations_does_not_report_failures()
         {
             var report = new ValidationReport(new RuleEvaluation[]
@@ -716,15 +715,15 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(1, report.Successes.Count());
         }
 
-        [NUnit.Framework.Ignore("Scenario is under development"), Microsoft.VisualStudio.TestTools.UnitTesting.Ignore]
-        [Test, TestMethod]
+        [NUnit.Framework.Ignore("Scenario is under development")]
+        [Test]
         public void Validation_results_can_be_displayed_hierarchically_based_on_rule_execution_ordering_and_nesting()
         {
             // TODO (Validation_results_can_be_displayed_hierarchically_based_on_rule_ex/ecution_ordering_and_nesting) write test
             Assert.Fail("Test not written yet.");
         }
 
-        [Test, TestMethod, Owner("dmitrf")]
+        [Test]
         public virtual void ValidationReport_Evaluations_does_not_report_internal_successes()
         {
             var report = new ValidationReport(new[] { new SuccessfulEvaluation { IsInternal = true } });
@@ -732,8 +731,8 @@ namespace Its.Validation.UnitTests
             Assert.That(report.Evaluations.Count(), Is.EqualTo(0));
         }
 
-        [NUnit.Framework.Ignore("Fails, but may be a valid design change"), Microsoft.VisualStudio.TestTools.UnitTesting.Ignore]
-        [Test, TestMethod]
+        [NUnit.Framework.Ignore("Fails, but may be a valid design change")]
+        [Test]
         public void Evaluations_having_an_undetokenized_message_template_do_not_have_a_message()
         {
             var notExtinct = Validate.That<Species>(s => !s.As("species", sp => sp.Name).IsExtinct);

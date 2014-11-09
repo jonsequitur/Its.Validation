@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Its.Validation.Configuration;
 using Its.Validation.UnitTests.TestClasses;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using NUnit.Framework;
 using Validation.Tests.TestClasses;
@@ -17,16 +16,16 @@ namespace Its.Validation.UnitTests
     /// <summary>
     ///   The configuration api tests.
     /// </summary>
-    [TestClass, TestFixture]
+    [TestFixture]
     public class ConfigurationApiTests
     {
-        [SetUp, TestInitialize]
+        [SetUp]
         public void Initialize()
         {
             MessageGenerator.Current = null;
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Every_Func_overload_evaluates_every_item_without_short_circuiting()
         {
             var rules = new List<IValidationRule<string>>();
@@ -45,7 +44,7 @@ namespace Its.Validation.UnitTests
             }
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Every_rule_overload_evaluates_every_item_without_short_circuiting()
         {
             var hasAName = Validate.That<Individual>(s => !string.IsNullOrWhiteSpace(s.Name));
@@ -68,7 +67,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(4, report.Failures.Count());
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Dependencies_can_be_declared_within_expression_using_Validate_That()
         {
             var plan = new ValidationPlan<IEnumerable<Species>>();
@@ -96,7 +95,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(1, report.Failures.Count(f => f.ErrorCode == "name too long"));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Dependencies_can_be_declared_using_a_func()
         {
             var plan = new ValidationPlan<IEnumerable<Species>>();
@@ -121,7 +120,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(1, report.Failures.Count(f => f.ErrorCode == "name too long"));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Dependencies_can_be_declared_using_optional_parameter_on_AddRule()
         {
             var plan = new ValidationPlan<Species>();
@@ -139,7 +138,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(1, reportOnSpeciesWithLongName.Failures.Count());
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void ErrorCode_can_be_declared_using_optional_parameter_on_AddRule()
         {
             var plan = new ValidationPlan<Species>();
@@ -154,7 +153,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual("oops", reportOnSpeciesWithLongName.Failures.First().ErrorCode);
         }
 
-        [Test, TestMethod]
+        [Test]
         public void When_When_is_called_with_null_Func_it_throws()
         {
             var rule = Validate.That<string>(s => false);
@@ -162,7 +161,7 @@ namespace Its.Validation.UnitTests
             Assert.Throws<ArgumentNullException>(() => rule.When((Func<string, bool>) null));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void When_When_is_called_with_null_Rule_it_throws()
         {
             var rule = Validate.That<string>(s => false);
@@ -171,7 +170,7 @@ namespace Its.Validation.UnitTests
             Assert.Throws<ArgumentNullException>(() => rule.When(rules));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void ForMember_using_func_returns_expected_member_name_for_immediate_property()
         {
             var rule = new ValidationPlan<Species>
@@ -184,7 +183,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual("Individuals", report.Failures.Single().MemberPath);
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void ForMember_using_func_returns_expected_member_name_for_chained_property()
         {
             var rule = new ValidationPlan<Phylum>
@@ -197,21 +196,21 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual("Kingdom.Name", report.Failures.Single().MemberPath);
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void ForMember_using_func_throws_for_extension_method()
         {
             Assert.Throws<NotSupportedException>(
                 () => Validate.That<Species>(s => false).ForMember(s => s.Individuals.First()));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void ForMember_using_expression_throws_not_supported_for_method()
         {
             Assert.Throws<NotSupportedException>(
                 () => Validate.That<Species>(s => false).ForMember(s => s.AddIndividual(null)));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void A_rule_can_be_instantiated_and_evaluated_during_another_rules_execution()
         {
             var plan = new ValidationPlan<Species>();
@@ -241,7 +240,7 @@ namespace Its.Validation.UnitTests
             Assert.That(report.Failures.Any(failure => failure.Target == cat));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void One_rule_can_be_evaluated_inside_another_without_framework_being_aware_of_it()
         {
             var individualNameRule = Validate.That<Individual>(i => !string.IsNullOrEmpty(i.Name))
@@ -269,7 +268,7 @@ namespace Its.Validation.UnitTests
             Assert.IsTrue(report.HasFailures);
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Rule_can_validate_children_using_func()
         {
             var cat = new Species("Felis silvestris");
@@ -287,7 +286,7 @@ namespace Its.Validation.UnitTests
             Assert.IsFalse(rule.Check(mutants));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Rules_can_be_aggregated_from_function_calls()
         {
             var plan = new ValidationPlan<Species>();
@@ -313,7 +312,7 @@ namespace Its.Validation.UnitTests
             Assert.That(report.Failures.Any(failure => failure.Target == cat));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Rule_validates_using_a_func()
         {
             var rule = Validate.That<Species>(species =>
@@ -326,14 +325,14 @@ namespace Its.Validation.UnitTests
             Assert.IsFalse(rule.Check(giraffe));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Setting_message_generator_to_null_does_not_cause_Current_to_return_null()
         {
             MessageGenerator.Current = null;
             Assert.IsNotNull(MessageGenerator.Current);
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void ValidationPlan_params_array_ctor_can_be_used_to_combine_plans()
         {
             var plan1 = new ValidationPlan<string>
@@ -355,13 +354,13 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(4, report.Failures.Count());
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void When_ValidationPlan_params_array_ctor_receives_null_it_throws()
         {
             Assert.Throws<ArgumentNullException>(() => new ValidationPlan<string>((IValidationRule<string>[]) null));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void ValidationPlan_collection_initializer_can_be_used_to_combine_plans()
         {
             var plan1 = new ValidationPlan<string>
@@ -387,7 +386,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(4, report.Failures.Count());
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void ValidationPlan_collection_initializer_can_be_used_to_combine_plans_with_error_code_assignments()
         {
             var notNull = new ValidationPlan<string> { Validate.That<string>(s => s != null) };
@@ -406,7 +405,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(2, report.Failures.Count(f => f.ErrorCode == "null check"));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void ValidationPlan_collection_initializer_can_be_used_to_combine_rules()
         {
             var plan = new ValidationPlan<Species>
@@ -420,7 +419,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(2, report.Failures.Count());
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void
             ValidationPlan_collection_initializer_can_be_used_to_combine_rules_with_error_code_assignments()
         {
@@ -461,7 +460,7 @@ namespace Its.Validation.UnitTests
             return Validate.That<Individual>(i => i.Species == species);
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Rule_extension_value_from_class_is_available_on_failure()
         {
             var plan = new ValidationPlan<string>
@@ -477,7 +476,7 @@ namespace Its.Validation.UnitTests
                             report.Failures.First().Result<ErrorClass>().Message);
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Rule_extension_value_from_struct_is_available_on_failure()
         {
             var plan = new ValidationPlan<string>
@@ -493,7 +492,7 @@ namespace Its.Validation.UnitTests
                             report.Failures.First().Result<ErrorStruct>().Message);
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Cloned_and_forked_rule_with_different_extension_class()
         {
             var rule = Validate.That<string>(s => s.Contains("some string that s will never contain"));
@@ -511,7 +510,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(1, report.Failures.Count(f => f.Result<ErrorClass>().Message == "second"));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void When_operator_expression_overload_does_not_mutate_rule()
         {
             var baseRule = Validate.That<IEnumerable<int>>(ints => false);
@@ -525,7 +524,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(0, results2.Failures.Count());
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void When_operator_rule_overload_does_not_mutate_rule()
         {
             var baseRule = Validate.That<IEnumerable<int>>(ints => false);
@@ -543,7 +542,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(0, results2.Failures.Count());
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void With_operator_does_not_mutate_rule()
         {
             var baseRule = Validate.That<IEnumerable<int>>(ints => false);
@@ -557,7 +556,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(1, results2.Failures.Count(f => f.Result<string>() == "goodbye"));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Success_and_failure_messages_can_be_configured_separately()
         {
             var plan = new ValidationPlan<string>
@@ -574,7 +573,7 @@ namespace Its.Validation.UnitTests
             StringAssert.Contains("Win!", success.Message);
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Handle_returns_false_when_exception_is_thrown()
         {
             var rule = Validate.That<string>(s => Throw<NotSupportedException>())
@@ -585,7 +584,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(false, result);
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Handle_returns_result_of_rule_when_no_exception_is_thrown()
         {
             var trueRule = Validate.That<string>(s => true)
@@ -600,7 +599,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(false, f);
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Handle_throws_if_exception_is_not_of_specified_type()
         {
             var rule = Validate
@@ -610,7 +609,7 @@ namespace Its.Validation.UnitTests
             Assert.Throws<NullReferenceException>(() => rule.Check(""));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Handle_can_be_used_to_add_exception_to_parameters()
         {
             var expected = new NotSupportedException();
@@ -623,7 +622,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(expected, report.Failures.Single().Parameters["exception"]);
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Handle_can_be_used_to_add_a_property_of_the_exception_to_parameters()
         {
             var rule = Validate.That<string>(s => Throw<NotSupportedException>())
@@ -635,7 +634,7 @@ namespace Its.Validation.UnitTests
         }
 
         [NUnit.Framework.Ignore("Not supported currently"), Microsoft.VisualStudio.TestTools.UnitTesting.Ignore]
-        [Test, TestMethod]
+        [Test]
         public void Handle_extends_FailedEvaluation_instance_with_caught_exception()
         {
             var ex = new NotSupportedException();
@@ -650,7 +649,7 @@ namespace Its.Validation.UnitTests
         }
 
         [NUnit.Framework.Ignore("Not supported currently"), Microsoft.VisualStudio.TestTools.UnitTesting.Ignore]
-        [Test, TestMethod]
+        [Test]
         public void When_multiple_Handles_are_chained_they_all_take_effect()
         {
             var ex = new IndexOutOfRangeException();

@@ -6,16 +6,15 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Its.Validation.Configuration;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 
 namespace Its.Validation.UnitTests
 {
-    [TestClass, TestFixture]
+    [TestFixture]
     public class DataAnnotationsTests
     {
-        [Test, TestMethod]
+        [Test]
         public void ConfigureFromAttributes_returns_a_new_instance_of_the_ValidationPlan()
         {
             var plan = new ValidationPlan<Account>();
@@ -24,7 +23,7 @@ namespace Its.Validation.UnitTests
             Assert.That(plan != configuredPlan);
         }
 
-        [Test, TestMethod]
+        [Test]
         public void FailedEvaluation_Message_is_set_from_data_annotation_ErrorMessage()
         {
             ValidationPlan<Account> plan = new ValidationPlan<Account>()
@@ -35,7 +34,7 @@ namespace Its.Validation.UnitTests
             Assert.That(report.Failures.Any(f => f.Message == "What's your name?"));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void FailedEvaluation_Message_is_templated_per_normal_DataAnnotations_convention()
         {
             ValidationPlan<Account> plan = new ValidationPlan<Account>()
@@ -47,7 +46,7 @@ namespace Its.Validation.UnitTests
                         Is.EqualTo("Keep that UserName between 1 and 100!"));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void FailedEvaluation_Rule_is_not_null()
         {
             ValidationPlan<Account> plan = new ValidationPlan<Account>()
@@ -63,7 +62,7 @@ namespace Its.Validation.UnitTests
             Assert.That(report.Failures.All(f => f.Rule != null));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void FailedEvaluation_target_is_set_to_the_instance_that_was_evaluated()
         {
             ValidationPlan<Account> plan = new ValidationPlan<Account>()
@@ -75,7 +74,7 @@ namespace Its.Validation.UnitTests
             Assert.That(report.Failures.Any(f => f.Target == account));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Nested_validations_can_be_supported()
         {
             ValidationPlan<Account> accountValidator = new ValidationPlan<Account>()

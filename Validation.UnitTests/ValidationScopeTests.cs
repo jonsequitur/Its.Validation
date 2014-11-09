@@ -7,17 +7,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using Its.Validation.Configuration;
 using Its.Validation.UnitTests.TestClasses;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 
 namespace Its.Validation.UnitTests
 {
-    [TestClass, TestFixture]
+    [TestFixture]
     public class ValidationScopeTests
     {
-        [Test, TestMethod]
+        [Test]
         public void ValidationScopes_are_not_shared_across_threads()
         {
             IDictionary<string, object> scope1Params = null;
@@ -55,7 +54,7 @@ namespace Its.Validation.UnitTests
             Assert.That(scope2Params["two"], Is.EqualTo(2));
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Outer_validation_scope_aggregates_rules_from_inner_scopes()
         {
             var plan = new ValidationPlan<string>
@@ -82,7 +81,7 @@ namespace Its.Validation.UnitTests
             }
         }
 
-        [Test, TestMethod]
+        [Test]
         public void ValidationScope_AllFailures_reports_internal_failures()
         {
             var scope = new ValidationScope();
@@ -92,7 +91,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(1, scope.AllFailures.Count());
         }
 
-        [Test, TestMethod]
+        [Test]
         public void ValidationScope_Failures_does_not_report_internal_failures()
         {
             var scope = new ValidationScope();
@@ -102,7 +101,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(0, scope.Failures.Count());
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Rule_evaluations_in_inner_scopes_are_reported_to_all_outer_scopes()
         {
             using (var outerScope = new ValidationScope())
@@ -121,7 +120,7 @@ namespace Its.Validation.UnitTests
             }
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Rule_failures_in_inner_scopes_are_reported_to_all_outer_scopes()
         {
             using (var outerScope = new ValidationScope())
@@ -140,7 +139,7 @@ namespace Its.Validation.UnitTests
             }
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Rule_successes_in_inner_scopes_are_reported_to_all_outer_scopes()
         {
             using (var outerScope = new ValidationScope())
@@ -159,7 +158,7 @@ namespace Its.Validation.UnitTests
             }
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Manually_opening_a_scope_does_not_affect_results_of_plan_execution()
         {
             var unScopesTRexResult = IsAcceptablePet().Execute(Tyrannosaurus());
@@ -172,7 +171,7 @@ namespace Its.Validation.UnitTests
             }
         }
 
-        [Test, TestMethod]
+        [Test]
         public void ValidationScope_raises_events_as_evaluations_are_performed()
         {
             var wasCalled = false;
@@ -185,7 +184,7 @@ namespace Its.Validation.UnitTests
             Assert.That(wasCalled);
         }
 
-        [Test, TestMethod]
+        [Test]
         public void ValidationScope_raises_events_as_evaluations_are_added_to_nested_scopes()
         {
             var wasCalled = false;
@@ -202,7 +201,7 @@ namespace Its.Validation.UnitTests
             Assert.That(wasCalled);
         }
 
-        [Test, TestMethod]
+        [Test]
         public void ValidationScope_raises_events_as_evaluations_are_added_to_child_scopes_on_other_threads()
         {
             int evaluationCount = 0;
@@ -220,7 +219,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(31, evaluationCount);
         }
 
-        [Test, TestMethod]
+        [Test]
         public void An_unentered_scope_does_not_receive_parameters()
         {
             var scope = new ValidationScope(false);
@@ -230,7 +229,7 @@ namespace Its.Validation.UnitTests
             Assert.That(scope.FlushParameters(), Is.Null);
         }
 
-        [Test, TestMethod]
+        [Test]
         public void An_unentered_scope_can_be_disposed()
         {
             var scope = new ValidationScope(false);
@@ -238,7 +237,7 @@ namespace Its.Validation.UnitTests
             scope.Dispose();
         }
 
-        [Test, TestMethod]
+        [Test]
         public void An_unentered_scope_still_passes_evaluationsd_to_parent_scope()
         {
             var rule = Validate.That<bool>(f => false).WithErrorMessage("oops");
@@ -253,7 +252,7 @@ namespace Its.Validation.UnitTests
             Assert.That(report.Failures.Count(f => f.Message == "oops"), Is.EqualTo(1));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void When_adding_parameters_to_disposed_scope_they_are_not_added_to_the_parent()
         {
             var rule = Validate.That<bool>(f => false).WithErrorMessage("oops");
@@ -270,7 +269,7 @@ namespace Its.Validation.UnitTests
         }
 
         [NUnit.Framework.Ignore("Fix requires some design consideration"), Microsoft.VisualStudio.TestTools.UnitTesting.Ignore]
-        [Test, TestMethod]
+        [Test]
         public void When_parameters_collide_in_the_ValidationScope_they_can_be_reported_incorrectly()
         {
             // BUG: (When_parameters_collide_in_the_ValidationScope_they_can_be_reported_incorrectly) this also shows an interesting bug where As overwrites because it's in a loop. some strategy for parameter collisions should be implemented.

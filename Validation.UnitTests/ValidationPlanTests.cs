@@ -5,23 +5,22 @@ using System.Collections.Generic;
 using System.Linq;
 using Its.Validation.Configuration;
 using Its.Validation.UnitTests.TestClasses;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 
 namespace Its.Validation.UnitTests
 {
-    [TestClass, TestFixture]
+    [TestFixture]
     public class ValidationPlanTests
     {
-        [TestInitialize, SetUp]
+        [SetUp]
         public void TestInitialize()
         {
             MessageGenerator.Current = null;
         }
 
-        [Test, TestMethod]
+        [Test]
         public void ValidationPlan_executes_multiple_rules_and_ValidationFailure_count_is_correct()
         {
             var plan = new ValidationPlan<Species>();
@@ -35,7 +34,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(2, report.Failures.Count());
         }
 
-        [Test, TestMethod]
+        [Test]
         public void ValidationPlan_Task_executes_multiple_rules_and_ValidationFailure_count_is_correct()
         {
             var plan = new ValidationPlan<Species>();
@@ -51,7 +50,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(2, report.Failures.Count());
         }
 
-        [Test, TestMethod]
+        [Test]
         public void ValidationPlan_executes_all_rules()
         {
             var rule1WasCalled = false;
@@ -75,7 +74,7 @@ namespace Its.Validation.UnitTests
             Assert.That(rule3WasCalled);
         }
 
-        [Test, TestMethod]
+        [Test]
         public void ValidationPlan_Task_executes_all_rules()
         {
             var rule1 = new Mock<IValidationRule<Species>>();
@@ -99,7 +98,7 @@ namespace Its.Validation.UnitTests
             rule3.VerifyAll();
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Iterative_nested_rules_are_all_executed()
         {
             var innerRule = Validate.That<Individual>(i => false);
@@ -118,7 +117,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(4, report.Failures.Where(f => f.Target is Individual).Count());
         }
 
-        [Test, TestMethod]
+        [Test]
         public virtual void Iterative_nested_tasks_are_all_executed()
         {
             var innerRule = Validate.That<Individual>(i => false);
@@ -136,7 +135,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(4, report.Failures.Where(f => f.Target is Individual).Count());
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Rules_within_ValidationPlan_can_be_iterated()
         {
             var plan = new ValidationPlan<string>();
@@ -146,7 +145,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(10, plan.Count());
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Nested_Rules_within_ValidationPlan_are_not_iterated_when_plan_is_iterated()
         {
             var plan = new ValidationPlan<string>();
@@ -159,7 +158,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(10, plan.Count());
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Iterative_nested_rules_can_be_executed_with_short_circuiting()
         {
             var innerRule = Validate.That<Individual>(i => false);
@@ -178,7 +177,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(1, report.Failures.Where(f => f.Target is Individual).Count());
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Iterative_nested_tasks_can_be_executed_with_short_circuiting()
         {
             var innerRule = Validate.That<Individual>(i => false);
@@ -196,7 +195,7 @@ namespace Its.Validation.UnitTests
             Assert.That(report.Failures.Count(f => f.Target is Individual), Is.EqualTo(1));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void ValidationPlans_can_be_combined()
         {
             var plan1 = new ValidationPlan<Species>();
@@ -242,7 +241,7 @@ namespace Its.Validation.UnitTests
             Assert.That(report.Failures.Count(f => f.Target == nameless), Is.EqualTo(1));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void haltOnFirstFailure_set_to_false_all_rules_are_evaluated()
         {
             var ruleWasCalled = false;
@@ -295,7 +294,7 @@ namespace Its.Validation.UnitTests
             Assert.IsTrue(nestedPlanRule4WasCalled);
         }
 
-        [Test, TestMethod]
+        [Test]
         public void haltOnFirstFailure_set_to_true_does_not_execute_subsequent_rules_after_failure()
         {
             bool called1 = false, called2 = false;
@@ -318,7 +317,7 @@ namespace Its.Validation.UnitTests
             Assert.IsFalse(called2);
         }
 
-        [Test, TestMethod]
+        [Test]
         public void haltOnFirstFailure_set_to_true_last_rule_executes_when_no_failures()
         {
             bool called1 = false, called2 = false;
@@ -341,7 +340,7 @@ namespace Its.Validation.UnitTests
             Assert.IsTrue(called2);
         }
 
-        [Test, TestMethod]
+        [Test]
         public void haltOnFirstFailure_set_to_true_and_rule_with_failing_func_precondition_then_does_not_stop_evaluation()
         {
             var called = false;
@@ -359,7 +358,7 @@ namespace Its.Validation.UnitTests
             Assert.IsTrue(called);
         }
 
-        [Test, TestMethod]
+        [Test]
         public void haltOnFirstFailure_set_to_true_and_rule_with_failing_rule_precondition_then_does_not_stop_evaluation()
         {
             var precondition = Validate.That<bool>(b => false);
@@ -378,7 +377,7 @@ namespace Its.Validation.UnitTests
             Assert.IsTrue(called);
         }
 
-        [Test, TestMethod]
+        [Test]
         public void haltOnFirstFailure_set_to_true_and_failing_rule_then_precondition_of_next_rule_does_not_evaluate()
         {
             var called = false;
@@ -397,7 +396,7 @@ namespace Its.Validation.UnitTests
             Assert.IsFalse(called);
         }
 
-        [Test, TestMethod]
+        [Test]
         public void haltOnFirstFailure_applies_to_nested_plan()
         {
             var plan = new ValidationPlan<bool>
@@ -418,7 +417,7 @@ namespace Its.Validation.UnitTests
             Assert.That(result.Failures.Count(), Is.EqualTo(2));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Nested_plan_evaluates_all_rules()
         {
             var rule1Evaluated = false;
@@ -452,7 +451,7 @@ namespace Its.Validation.UnitTests
                         Is.EqualTo(5));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Nested_plan_does_not_evaluate_all_when_parent_is_executed_with_haltOnFirstFailure_set_to_true()
         {
             var plan = new ValidationPlan<string>()
@@ -470,7 +469,7 @@ namespace Its.Validation.UnitTests
                         Is.EqualTo(3));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Nested_plan_can_evaluate_all_when_parent_uses_HaltOnFirstFailure_strategy()
         {
             var plan = new ValidationPlan<string> { Strategy = EvaluationStrategy<string>.HaltOnFirstFailure }
@@ -488,7 +487,7 @@ namespace Its.Validation.UnitTests
                         Is.EqualTo(5));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void Nested_plan_can_halt_on_first_failure_when_parent_uses_EvaluateAll_strategy()
         {
             var plan = new ValidationPlan<string> { Strategy = EvaluationStrategy<string>.EvaluateAll }
@@ -506,7 +505,7 @@ namespace Its.Validation.UnitTests
                         Is.EqualTo(3));
         }
 
-        [Test, TestMethod]
+        [Test]
         public void ValidationPlan_evaluates_all_when_strategy_is_EvaluateAll()
         {
             var plan = new ValidationPlan<string>
@@ -523,7 +522,7 @@ namespace Its.Validation.UnitTests
         }
 
         [NUnit.Framework.Ignore("Scenario not finished"), Microsoft.VisualStudio.TestTools.UnitTesting.Ignore]
-        [Test, TestMethod]
+        [Test]
         public void ValidationPlan_halts_on_first_failure_when_strategy_is_HaltOnFirstFailure()
         {
             // TODO: (ValidationPlan_halts_on_first_failure_when_strategy_is_HaltOnFirstFailure) 
