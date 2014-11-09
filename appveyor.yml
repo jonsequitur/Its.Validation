@@ -6,8 +6,10 @@ configuration:
 
 build:
   project: Its.Validation.sln
-  verbosity: detailed
 
 test:
   assemblies:
-    - '**\*.tests.dll'
+    - '**\*Tests.dll'
+
+artifacts:
+  - path: Validation\bin
