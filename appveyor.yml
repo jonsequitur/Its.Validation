@@ -4,9 +4,6 @@ install:
 platform:
   - AnyCPU
 
-configuration:
-  - Release
-
 build:
   project: Its.Validation.sln
   verbosity: detailed
