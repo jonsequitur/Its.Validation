@@ -2,14 +2,14 @@ install:
   - nuget restore
 
 platform:
-	- AnyCPU
+  - AnyCPU
 
 configuration:
-	- Release
+  - Release
 
 build:
-	project: Its.Validation.sln
-	verbosity: detailed
+  project: Its.Validation.sln
+  verbosity: detailed
 
 test:
   assemblies:
