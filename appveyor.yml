@@ -1,0 +1,16 @@
+install:
+  - nuget restore
+
+platform:
+	- AnyCPU
+
+configuration:
+	- Release
+
+build:
+	project: Its.Validation.sln
+	verbosity: detailed
+
+test:
+  assemblies:
+    - '**\*.tests.dll'
