@@ -14,4 +14,4 @@ test:
 
 artifacts:
   - path: Validation\bin
-  	name: Its.Validation
+    name: Its.Validation
