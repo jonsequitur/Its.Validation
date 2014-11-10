@@ -6,6 +6,7 @@ configuration:
 
 build:
   project: Its.Validation.sln
+  publish_nuget: true
 
 test:
   assemblies:
@@ -13,3 +14,4 @@ test:
 
 artifacts:
   - path: Validation\bin
+  	name: Its.Validation
