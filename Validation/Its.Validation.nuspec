@@ -12,9 +12,5 @@
     <copyright>Copyright 2014</copyright>
     <tags>validation</tags>
   </metadata>
-  <files>
-    <file src="\bin\Release\Its.Validation.dll" target="lib\net40" />
-    <file src="\bin\Release\Its.Validation.pdb" target="lib\net40" />
-    <file src="\bin\Release\Its.Validation.xml" target="lib\net40" />
-  </files>
+ 
 </package>
