@@ -8,11 +8,15 @@ namespace Its.Validation
     {
         private readonly Func<SuccessfulEvaluation, string> buildMessage;
 
+        protected SuccessMessageTemplate()
+        {
+        }
+
         public SuccessMessageTemplate(string value) : this(_ => value)
         {
         }
 
-        public SuccessMessageTemplate(Func<SuccessfulEvaluation, string> buildMessage) : base(null)
+        public SuccessMessageTemplate(Func<SuccessfulEvaluation, string> buildMessage)
         {
             if (buildMessage == null)
             {

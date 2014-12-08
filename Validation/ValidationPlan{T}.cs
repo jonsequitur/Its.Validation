@@ -121,12 +121,22 @@ namespace Its.Validation
         /// <param name="rule"> The rule. </param>
         /// <returns> The rule </returns>
         /// <remarks>
-        ///   This method is equivalent to <see cref="AddRule" /> . It is included to provide support for collection initializer syntax.
+        ///   This method is equivalent to <see cref="Add" /> . It is included to provide support for collection initializer syntax.
         /// </remarks>
         [Browsable(false)]
         public void Add(IValidationRule<TTarget> rule)
         {
             AddRule(rule);
+        }
+
+        /// <summary>
+        ///   Removes a rule to the validation plan.
+        /// </summary>
+        /// <param name="rule"> The rule to be removed.</param>
+        public ValidationPlan<TTarget> Remove(IValidationRule<TTarget> rule)
+        {
+            rules.Remove(rule);
+            return this;
         }
 
         /// <summary>

@@ -154,6 +154,44 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
+        public void RemoveRule_can_be_used_to_remove_a_rule_from_a_ValidatioPlan()
+        {
+            var notNull = Validate.That<string>(s => s != null);
+            var notEmpty = Validate.That<string>(s => s != "").When(notNull);
+
+            var plan = new ValidationPlan<string>
+            {
+                notNull,
+                notEmpty
+            };
+
+            Assert.That(plan.Check(""), Is.EqualTo(false));
+
+            plan.Remove(notEmpty);
+
+            Assert.That(plan.Check(""), Is.EqualTo(true));
+        }
+
+        [Test]
+        public void A_rule_removed_by_RemoveRule_can_still_be_dependend_on_by_another_rule()
+        {
+            var notNull = Validate.That<string>(s => s != null);
+            var notEmpty = Validate.That<string>(s => s != "").When(notNull);
+
+            var plan = new ValidationPlan<string>
+            {
+                notNull,
+                notEmpty
+            };
+
+            Assert.That(plan.Check(null), Is.EqualTo(false));
+
+            plan.Remove(notNull);
+
+            Assert.That(plan.Check(null), Is.EqualTo(true));
+        }
+
+        [Test]
         public void When_When_is_called_with_null_Func_it_throws()
         {
             var rule = Validate.That<string>(s => false);

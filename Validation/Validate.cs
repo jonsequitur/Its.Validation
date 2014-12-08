@@ -242,6 +242,22 @@ namespace Its.Validation.Configuration
         }
 
         /// <summary>
+        /// Provides an error message to be shown when the rule fails.
+        /// </summary>
+        /// <typeparam name="TTarget">The type of the object being validated.</typeparam>
+        /// <param name="rule">The rule.</param>
+        /// <param name="buildMessage">A function that returns a message appropriate to the validation failure.</param>
+        /// <returns></returns>
+        public static ValidationRule<TTarget> WithErrorMessage<TTarget>(
+            this ValidationRule<TTarget> rule,
+            Func<FailedEvaluation, TTarget, string> buildMessage)
+        {
+            var clone = rule.Clone();
+            clone.Set<FailureMessageTemplate>(new FailureMessageTemplate<TTarget>(buildMessage));
+            return clone;
+        }
+
+        /// <summary>
         ///   Assigns a message to the validation rule that will be displayed when the rule passes.
         /// </summary>
         /// <typeparam name="TTarget"> The type of the object being validated. </typeparam>
@@ -265,7 +281,24 @@ namespace Its.Validation.Configuration
                                                                           Func<SuccessfulEvaluation, string> buildMessage)
         {
             var clone = rule.Clone();
-            clone.Set<SuccessMessageTemplate>(new SuccessMessageTemplate(buildMessage));
+            clone.Set(new SuccessMessageTemplate(buildMessage));
+            return clone;
+        }
+
+        /// <summary>
+        /// Assigns a message to the validation rule that will be displayed when the rule passes.
+        /// </summary>
+        /// <typeparam name="TTarget">The type of the object being validated.</typeparam>
+        /// <param name="rule">The rule.</param>
+        /// <param name="buildMessage">A function that returns a message for a <see cref="SuccessfulEvaluation" />.</param>
+        /// <returns>
+        /// A clone of the source validation rule.
+        /// </returns>
+        public static ValidationRule<TTarget> WithSuccessMessage<TTarget>(this ValidationRule<TTarget> rule,
+                                                                          Func<SuccessfulEvaluation, TTarget, string> buildMessage)
+        {
+            var clone = rule.Clone();
+            clone.Set<SuccessMessageTemplate>(new SuccessMessageTemplate<TTarget>(buildMessage));
             return clone;
         }
 

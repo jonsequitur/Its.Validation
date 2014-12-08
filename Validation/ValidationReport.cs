@@ -102,14 +102,20 @@ namespace Its.Validation
         /// <returns> A <see cref="System.String" /> that represents this instance. </returns>
         public override string ToString()
         {
-            return
-                string.Format("{0} failed (out of {1} evaluations)", Failures.Count(), Evaluations.Count()) +
-                Environment.NewLine +
-                string.Join(Environment.NewLine,
-                            Evaluations
-                                .OrderBy(e => e is FailedEvaluation)
-                                .ThenBy(e => e.MemberPath)
-                                .Select(e => e.ToString()));
+            var failed = Evaluations.OfType<FailedEvaluation>()
+                                    .Select(e => "    " + e.ToString())
+                                    .Where(msg => !string.IsNullOrWhiteSpace(msg));
+
+            var passed = Evaluations.OfType<SuccessfulEvaluation>()
+                                    .Select(e => "    " + e.ToString())
+                                    .Where(msg => !string.IsNullOrWhiteSpace(msg));
+
+            return string.Format(
+                "{0} failed (out of {1} evaluations)\n  Failed:\n{2}\n  Passed:\n{3}",
+                Failures.Count(),
+                Evaluations.Count(),
+                string.Join(Environment.NewLine, failed),
+                string.Join(Environment.NewLine, passed));
         }
     }
 }

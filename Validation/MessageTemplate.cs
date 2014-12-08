@@ -9,7 +9,7 @@ namespace Its.Validation
     {
         private readonly string value;
 
-        public MessageTemplate(string value)
+        public MessageTemplate(string value = null)
         {
             this.value = value ?? string.Empty;
         }

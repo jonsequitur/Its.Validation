@@ -7,8 +7,6 @@ using Its.Validation.Configuration;
 using Its.Validation.UnitTests.TestClasses;
 using Moq;
 using NUnit.Framework;
-using Assert = NUnit.Framework.Assert;
-using StringAssert = NUnit.Framework.StringAssert;
 
 namespace Its.Validation.UnitTests
 {
@@ -93,19 +91,31 @@ namespace Its.Validation.UnitTests
         public void WithErrorMessage_lambda_overload_can_access_the_FailedEvaluation_to_build_a_message()
         {
             var isCat = Validate.That<Species>(c => c.Name == "Felis silvestris".As("species"))
-                .WithErrorMessage(f => "We're looking for a {species}, and you passed a " + f.Target);
+                                .WithErrorMessage(f => "We're looking for a {species}, and you passed a " + f.Target);
 
             var report = isCat.Execute(new Species { Name = "Iguana iguana" });
 
             Assert.That(report.Failures.Single().Message, Is.EqualTo("We're looking for a Felis silvestris, and you passed a Iguana iguana"));
+        }
+
+        [Test]
+        public void WithErrorMessage_lambda_overload_can_access_the_target_to_build_a_message()
+        {
+            var isCat = Validate.That<Species>(c => c.Name == "Felis silvestris".As("species"))
+                                .WithErrorMessage((evaluation, target) => "We're looking for a {species}, and you passed a " + target);
+
+            var report = isCat.Execute(new Species { Name = "Iguana iguana" });
+
+            Assert.That(report.Failures.Single().Message,
+                        Is.EqualTo("We're looking for a Felis silvestris, and you passed a Iguana iguana"));
         }
 
         [Test]
         public void WithErrorMessage_lambda_anonymous_message_generator_is_cloned()
         {
             var isCat = Validate.That<Species>(c => c.Name == "Felis silvestris".As("species"))
-                .WithErrorMessage(f => "We're looking for a {species}, and you passed a " + f.Target)
-                .Clone();
+                                .WithErrorMessage(f => "We're looking for a {species}, and you passed a " + f.Target)
+                                .Clone();
 
             var report = isCat.Execute(new Species { Name = "Iguana iguana" });
 
@@ -113,10 +123,21 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public void WithErrorMessage_lambda_overload_can_access_the_SuccessfulEvaluation_to_build_a_message()
+        public void WithSuccessMessage_lambda_overload_can_access_the_SuccessfulEvaluation_to_build_a_message()
         {
             var isCat = Validate.That<Species>(c => c.Name == "Felis silvestris")
-                .WithSuccessMessage(f => "Thank you for this lovely " + f.Target);
+                                .WithSuccessMessage(f => "Thank you for this lovely " + f.Target);
+
+            var report = isCat.Execute(new Species { Name = "Felis silvestris" });
+
+            Assert.That(report.Successes.Single().Message, Is.EqualTo("Thank you for this lovely Felis silvestris"));
+        }
+
+        [Test]
+        public void WithSuccessMessage_lambda_overload_can_access_the_target_to_build_a_message()
+        {
+            var isCat = Validate.That<Species>(c => c.Name == "Felis silvestris")
+                                .WithSuccessMessage((evaluation, target) => "Thank you for this lovely " + target);
 
             var report = isCat.Execute(new Species { Name = "Felis silvestris" });
 
@@ -196,11 +217,11 @@ namespace Its.Validation.UnitTests
             var hasNoLegs = new ValidationPlan<Species>
             {
                 Validate.That<Species>(s => s.As("species").NumberOfLegs.As("leg-count") == 0)
-                    .WithErrorMessage("{species} has {leg-count} legs!")
+                        .WithErrorMessage("{species} has {leg-count} legs!")
             };
             var genusIsLegless = Validate.That<Genus>(
                 g => g.As("genus").Species.Every(hasNoLegs.Check))
-                .ForMember(g => g.Species);
+                                         .ForMember(g => g.Species);
             var familyIsLegless =
                 new ValidationPlan<Family> { Validate.That<Family>(f => f.Genuses.Every(genusIsLegless)) };
 
@@ -246,7 +267,7 @@ namespace Its.Validation.UnitTests
                                       {
                                           Validate.That<string>(_ => false)
                                       }.Check(s))
-                    .WithErrorMessage("three")
+                        .WithErrorMessage("three")
             };
 
             var report = rule.Execute("");
@@ -267,8 +288,8 @@ namespace Its.Validation.UnitTests
                 Validate.That<string>(s =>
                                       Validate.That<string>(
                                           Validate.That<string>(_ => false).Check)
-                                          .Check(s))
-                    .WithErrorMessage("three")
+                                              .Check(s))
+                        .WithErrorMessage("three")
             };
 
             var report = rule.Execute("");
@@ -399,9 +420,9 @@ namespace Its.Validation.UnitTests
                     s => s.Individuals.Every(
                         Validate.That<Individual>(
                             i => i.Species.As("individualsSpecies") == s.As("expectedSpecies"))
-                            .WithMessage(
-                                "Expected all {expectedSpecies}s but found a {individualsSpecies}")
-                            .Check
+                                .WithMessage(
+                                    "Expected all {expectedSpecies}s but found a {individualsSpecies}")
+                                .Check
                              ))
             };
 
@@ -481,8 +502,8 @@ namespace Its.Validation.UnitTests
                     s => s.Individuals.Every(
                         Validate.That<Individual>(
                             i => i.Species.As("individualsSpecies") == s.As("expectedSpecies"))
-                            .WithMessage("Expected all {expectedSpecies}s but found a {individualsSpecies}")
-                            .Check))
+                                .WithMessage("Expected all {expectedSpecies}s but found a {individualsSpecies}")
+                                .Check))
             };
 
             var report = plan.Execute(cat);
@@ -538,12 +559,12 @@ namespace Its.Validation.UnitTests
                 s => new[] { "Fido", "Rex", "Bowser" }
                          .As("good-names", names => string.Join(", ", names))
                          .Contains(s.As("name")))
-                .WithErrorMessage("{name} is not a good name for a dog. Please choose from {good-names}");
+                                             .WithErrorMessage("{name} is not a good name for a dog. Please choose from {good-names}");
 
             var plan = new ValidationPlan<Individual>
             {
                 Validate.That<Individual>(s => isAGoodNameForADog.Check(s.Name))
-                    .ForMember(s => s.Name)
+                        .ForMember(s => s.Name)
             };
 
             var report = plan.Execute(new Individual { Name = "Fluffy" });
@@ -650,7 +671,7 @@ namespace Its.Validation.UnitTests
         public void Successful_rule_evaluations_have_informative_messages_containing_templated_values()
         {
             var hasIndividuals = Validate.That<Species>(s => s.Individuals.Count().As("count") > 0)
-                .WithMessage("Species has {count} individuals.");
+                                         .WithMessage("Species has {count} individuals.");
             var bunnies = new Species
             { Individuals = Enumerable.Range(1, 9000).Select(_ => new Individual()).ToList() };
 
@@ -715,7 +736,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(1, report.Successes.Count());
         }
 
-        [NUnit.Framework.Ignore("Scenario is under development")]
+        [Ignore("Scenario is under development")]
         [Test]
         public void Validation_results_can_be_displayed_hierarchically_based_on_rule_execution_ordering_and_nesting()
         {
@@ -731,13 +752,13 @@ namespace Its.Validation.UnitTests
             Assert.That(report.Evaluations.Count(), Is.EqualTo(0));
         }
 
-        [NUnit.Framework.Ignore("Fails, but may be a valid design change")]
+        [Ignore("Fails, but may be a valid design change")]
         [Test]
         public void Evaluations_having_an_undetokenized_message_template_do_not_have_a_message()
         {
             var notExtinct = Validate.That<Species>(s => !s.As("species", sp => sp.Name).IsExtinct);
             var makesAGoodPet = Validate.That<IEnumerable<Species>>(ss => ss.Every(notExtinct))
-                .WithErrorMessage("A {species} would make a terrible pet!");
+                                        .WithErrorMessage("A {species} would make a terrible pet!");
 
             var mammoth = new Species { Name = "Mammuthua primigenius", IsExtinct = true };
 
