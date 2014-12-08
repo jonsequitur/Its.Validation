@@ -60,8 +60,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public void
-            When_the_same_plan_is_run_on_two_threads_simultaneously_they_each_report_success_and_failure_correctly()
+        public void When_the_same_plan_is_run_on_two_threads_simultaneously_they_each_report_success_and_failure_correctly()
         {
             var barrier = new Barrier(2);
             var plan = new ValidationPlan<string>();
@@ -171,7 +170,7 @@ namespace Its.Validation.UnitTests
             Assert.That(report.Failures.Any(e => e.Message.Contains("http://google.com/ugiuagkjbsfksjdf")));
         }
 
-        [NUnit.Framework.Ignore("In development")]
+        [Ignore("In development")]
         [Test]
         public void Rules_within_a_ValidationPlan_can_use_APM_signatures_and_run_asynchronously()
         {
@@ -237,7 +236,7 @@ namespace Its.Validation.UnitTests
             Assert.That(setupStarted, Is.False);
         }
 
-        [NUnit.Framework.Ignore("In development")]
+        [Ignore("In development")]
         [Test]
         public void Rules_within_a_ValidationPlan_can_use_APM_signatures_and_run_synchronously()
         {
