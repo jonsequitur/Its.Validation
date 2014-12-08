@@ -171,7 +171,7 @@ namespace Its.Validation.UnitTests
             Assert.That(report.Failures.Any(e => e.Message.Contains("http://google.com/ugiuagkjbsfksjdf")));
         }
 
-        [NUnit.Framework.Ignore("In development"), Microsoft.VisualStudio.TestTools.UnitTesting.Ignore]
+        [NUnit.Framework.Ignore("In development")]
         [Test]
         public void Rules_within_a_ValidationPlan_can_use_APM_signatures_and_run_asynchronously()
         {
@@ -210,7 +210,7 @@ namespace Its.Validation.UnitTests
             Assert.That(result.Failures.Any(f => f.Message == "http://google.com is missing the <awesome> tag!"));
         }
 
-        [NUnit.Framework.Ignore("In development"), Microsoft.VisualStudio.TestTools.UnitTesting.Ignore]
+        [Ignore("In development")]
         [Test]
         public void Continuation_rules_do_not_start_setup_tasks_when_precondition_fails()
         {
@@ -237,7 +237,7 @@ namespace Its.Validation.UnitTests
             Assert.That(setupStarted, Is.False);
         }
 
-        [NUnit.Framework.Ignore("In development"), Microsoft.VisualStudio.TestTools.UnitTesting.Ignore]
+        [NUnit.Framework.Ignore("In development")]
         [Test]
         public void Rules_within_a_ValidationPlan_can_use_APM_signatures_and_run_synchronously()
         {

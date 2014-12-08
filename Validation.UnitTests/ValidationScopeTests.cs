@@ -268,7 +268,7 @@ namespace Its.Validation.UnitTests
             Assert.That(report.Failures.Count(f => f.Message == "oops"), Is.EqualTo(0));
         }
 
-        [NUnit.Framework.Ignore("Fix requires some design consideration"), Microsoft.VisualStudio.TestTools.UnitTesting.Ignore]
+        [NUnit.Framework.Ignore("Fix requires some design consideration")]
         [Test]
         public void When_parameters_collide_in_the_ValidationScope_they_can_be_reported_incorrectly()
         {

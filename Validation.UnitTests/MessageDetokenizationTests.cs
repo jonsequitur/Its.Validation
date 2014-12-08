@@ -28,7 +28,7 @@ namespace Its.Validation.UnitTests
                             MessageGenerator.Detokenize(string.Empty, new Dictionary<string, object>()));
         }
 
-        [NUnit.Framework.Ignore("Fails, but may be a valid design change"), Microsoft.VisualStudio.TestTools.UnitTesting.Ignore]
+        [NUnit.Framework.Ignore("Fails, but may be a valid design change")]
         [Test]
         public virtual void When_parameters_are_missing_then_Detokenize_returns_empty_string()
         {

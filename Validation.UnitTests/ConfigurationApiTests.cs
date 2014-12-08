@@ -633,7 +633,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(new NotSupportedException().Message, report.Failures.Single().Parameters["message"]);
         }
 
-        [NUnit.Framework.Ignore("Not supported currently"), Microsoft.VisualStudio.TestTools.UnitTesting.Ignore]
+        [Ignore("Not supported currently")]
         [Test]
         public void Handle_extends_FailedEvaluation_instance_with_caught_exception()
         {
@@ -648,7 +648,7 @@ namespace Its.Validation.UnitTests
                 report.Failures.Single().Result<NotSupportedException>());
         }
 
-        [NUnit.Framework.Ignore("Not supported currently"), Microsoft.VisualStudio.TestTools.UnitTesting.Ignore]
+        [Ignore("Not supported currently")]
         [Test]
         public void When_multiple_Handles_are_chained_they_all_take_effect()
         {

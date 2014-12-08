@@ -521,7 +521,7 @@ namespace Its.Validation.UnitTests
                         Is.EqualTo(10));
         }
 
-        [NUnit.Framework.Ignore("Scenario not finished"), Microsoft.VisualStudio.TestTools.UnitTesting.Ignore]
+        [NUnit.Framework.Ignore("Scenario not finished")]
         [Test]
         public void ValidationPlan_halts_on_first_failure_when_strategy_is_HaltOnFirstFailure()
         {

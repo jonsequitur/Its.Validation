@@ -503,7 +503,7 @@ namespace Its.Validation.UnitTests
             Assert.AreEqual(1, report.Failures.Count(f => f.ErrorCode == "null"));
         }
 
-        [NUnit.Framework.Ignore("Scenario not currently supported"), Microsoft.VisualStudio.TestTools.UnitTesting.Ignore]
+        [NUnit.Framework.Ignore("Scenario not currently supported")]
         [Test]
         public virtual void When_rule_is_declared_first_as_precondition_then_as_rule_it_is_only_evaluated_once()
         {

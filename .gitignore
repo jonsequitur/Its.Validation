@@ -6,4 +6,4 @@ bin/
 obj/
 packages/
 TestResults/
-_ReSharper.Its.Validation/
+_ReSharper.*

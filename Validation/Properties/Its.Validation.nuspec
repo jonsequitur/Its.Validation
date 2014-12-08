@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Its.Validation</id>
+    <title>Its.Validation</title>
+    <version>1.2.0</version>
+    <authors>Microsoft,jonsequitur</authors>
+    <owners>Microsoft</owners>
+    <projectUrl>https://github.com/jonsequitur/Its.Validation</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A fluent API for writing rules in a composable, functional style</description>
+    <copyright>Copyright 2014</copyright>
+    <tags>validation</tags>
+  </metadata>
+  <files>
+    <file src="Its.Validation.dll" target="lib\net40" />
+    <file src="Its.Validation.pdb" target="lib\net40" />
+    <file src="Its.Validation.xml" target="lib\net40" />
+  </files>
+</package>
