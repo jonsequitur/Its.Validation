@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) Microsoft Corporation. All rights reserved. See license.txt in the project root for license information.
+
+using System;
 using Its.Recipes;
 
 namespace Its.Validation
