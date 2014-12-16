@@ -1,4 +1,4 @@
-### A C# DSL for writing rules in a composable, functional style.
+### A C# library for composing your core business rules and freeing them from framework-specific validation.
 
 [![Build Status](https://ci.appveyor.com/api/projects/status/github/jonsequitur/Its.Validation)](https://ci.appveyor.com/project/jonsequitur/its-validation)
 
@@ -65,9 +65,9 @@ var basket = new FruitBasket();
 
 var failures = plan.Execute(basket);
 
-Assert.That(
-    failures.Count(f => f.Message == "Your basket must contain some fruit."),
-    Is.EqualTo(1));
+failures.Count(f => f.Message == "Your basket must contain some fruit.")
+        .Should()
+        .Be(1));
 ```
 
 Extend the validation results with your own types:
