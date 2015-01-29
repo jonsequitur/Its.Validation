@@ -1,6 +1,6 @@
 ### A C# library for composing your core business rules and freeing them from framework-specific validation.
 
-[![Build Status](https://ci.appveyor.com/api/projects/status/github/jonsequitur/Its.Validation)](https://ci.appveyor.com/project/jonsequitur/its-validation)
+[![Build Status](https://ci.appveyor.com/api/projects/status/github/jonsequitur/Its.Validation?svg=true&branch=master)](https://ci.appveyor.com/project/jonsequitur/its-validation)
 
 Define a validation rule:
 
