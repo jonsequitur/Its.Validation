@@ -142,7 +142,7 @@ namespace Its.Validation
                 scope.AddEvaluation(new FailedEvaluation(target, this, messageGenerator)
                 {
                     IsInternal = CreatesEvaluationsAsInternal,
-                    Parameters = parameters,
+                    Parameters = parameters
                 });
             }
             else

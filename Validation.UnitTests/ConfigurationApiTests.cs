@@ -595,6 +595,20 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
+        public virtual void With_operator_does_not_mutate_plan()
+        {
+            var baseRule = Validate.That<IEnumerable<int>>(ints => false);
+            var rule1 = new ValidationPlan<IEnumerable<int>> { baseRule }.With("hello");
+            var rule2 = new ValidationPlan<IEnumerable<int>> { baseRule }.With("goodbye");
+
+            var results1 = rule1.Execute(null);
+            var results2 = rule2.Execute(null);
+
+            Assert.AreEqual(1, results1.Failures.Count(f => f.Result<string>() == "hello"));
+            Assert.AreEqual(1, results2.Failures.Count(f => f.Result<string>() == "goodbye"));
+        }
+
+        [Test]
         public void Success_and_failure_messages_can_be_configured_separately()
         {
             var plan = new ValidationPlan<string>

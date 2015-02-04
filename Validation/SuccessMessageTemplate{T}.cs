@@ -24,7 +24,6 @@ namespace Its.Validation
             var template = buildMessage(successfulEvaluation,
                                         evaluation.Target
                                                   .IfTypeIs<TTarget>()
-                                                  .Then(t => t)
                                                   .ElseDefault());
             return MessageGenerator.Detokenize(template, successfulEvaluation.Parameters);
         }
