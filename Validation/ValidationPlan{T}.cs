@@ -123,7 +123,6 @@ namespace Its.Validation
         /// <remarks>
         ///   This method is equivalent to <see cref="Add" /> . It is included to provide support for collection initializer syntax.
         /// </remarks>
-        [Browsable(false)]
         public void Add(IValidationRule<TTarget> rule)
         {
             AddRule(rule);
