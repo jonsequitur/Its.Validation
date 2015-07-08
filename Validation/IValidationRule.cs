@@ -13,7 +13,7 @@ namespace Its.Validation
         ///   Allows access to rule results.
         /// </summary>
         /// <typeparam name="T"> The type of the result </typeparam>
-        /// <returns> An instance of the specified type <typeparamref name="T" /> , or null if it has not been defined on this rule or in this rules <see
+        /// <returns> An instance of the specified type <typeparamref name="T" /> , or null if it has not been defined on this rule or in this rule's <see
         ///    cref="ValidationScope" /> . </returns>
         T Result<T>();
     }
