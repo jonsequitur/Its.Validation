@@ -13,6 +13,7 @@ using Assert = NUnit.Framework.Assert;
 
 namespace Its.Validation.UnitTests
 {
+    [Ignore]
     [TestFixture]
     public class AsyncTests
     {
