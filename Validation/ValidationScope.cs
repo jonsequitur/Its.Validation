@@ -4,6 +4,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 
 namespace Its.Validation
@@ -13,6 +14,10 @@ namespace Its.Validation
     /// </summary>
     public class ValidationScope : IDisposable
     {
+        private static readonly ConcurrentDictionary<Guid, Stack<ValidationScope>> rootScopes = new ConcurrentDictionary<Guid, Stack<ValidationScope>>();
+        private const string callContextKey = "__Its_Validation_ValidationScopes__";
+        private readonly Guid id = Guid.NewGuid();
+
         /// <summary>
         ///   Occurs when a rule evaluated on the scope or in one of its child scopes.
         /// </summary>
@@ -43,8 +48,6 @@ namespace Its.Validation
         /// <summary>
         ///   A stack containing the active scopes in the order they were opened
         /// </summary>
-        // TODO: (ValidationScope) use CallContext
-        [ThreadStatic]
         private static Stack<ValidationScope> activeScopes;
 
         /// <summary>
@@ -135,10 +138,23 @@ namespace Its.Validation
             {
                 if (activeScopes == null)
                 {
-                    activeScopes = new Stack<ValidationScope>();
+                    var activeScopesIdObj = CallContext.LogicalGetData(callContextKey);
 
-                    // TODO: (ActiveScopes) something like this:
-                    // activeScopes = (Stack<ValidationScope>) CallContext.LogicalGetData("__Its_Validation_ValidationScopes__");
+                    Guid activeScopesId;
+
+                    if (activeScopesIdObj == null)
+                    {
+                        activeScopesId = Guid.NewGuid();
+                    }
+                    else
+                    {
+                        activeScopesId = (Guid) activeScopesIdObj;
+                    }
+
+                    activeScopes = rootScopes.GetOrAdd(activeScopesId, k => new Stack<ValidationScope>());
+                    activeScopes = rootScopes.GetOrAdd(activeScopesId, k => new Stack<ValidationScope>());
+
+                    CallContext.LogicalSetData(callContextKey, activeScopesId);
                 }
 
                 return activeScopes;
@@ -189,6 +205,10 @@ namespace Its.Validation
             {
                 popped = ActiveScopes.Pop();
             } while (scope != popped);
+
+            Stack<ValidationScope> _;
+            rootScopes.TryRemove(popped.id, out _);
+            CallContext.FreeNamedDataSlot(callContextKey);
         }
 
         /// <summary>
@@ -298,9 +318,9 @@ namespace Its.Validation
             }
         }
 
-        internal bool HasFailed(object target, IValidationRule ruleTemp)
+        internal bool HasFailed(object target, IValidationRule rule)
         {
-            return AllFailures.Any(f => !f.IsInternal && Equals(ruleTemp, f.Rule) && Equals(target, f.Target));
+            return AllFailures.Any(f => !f.IsInternal && Equals(rule, f.Rule) && Equals(target, f.Target));
         }
 
         /// <summary>
