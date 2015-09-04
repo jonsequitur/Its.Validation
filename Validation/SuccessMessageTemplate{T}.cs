@@ -22,9 +22,9 @@ namespace Its.Validation
         {
             var successfulEvaluation = evaluation as SuccessfulEvaluation ?? new SuccessfulEvaluation();
             var template = buildMessage(successfulEvaluation,
-                                        evaluation.Target
-                                                  .IfTypeIs<TTarget>()
-                                                  .ElseDefault());
+                                        successfulEvaluation.Target
+                                                            .IfTypeIs<TTarget>()
+                                                            .ElseDefault());
             return MessageGenerator.Detokenize(template, successfulEvaluation.Parameters);
         }
 

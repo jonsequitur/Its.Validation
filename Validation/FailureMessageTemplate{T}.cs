@@ -21,11 +21,11 @@ namespace Its.Validation
         public override string GetMessage(RuleEvaluation evaluation)
         {
             var failedEvaluation = evaluation as FailedEvaluation ?? new FailedEvaluation();
-            
+
             var template = buildMessage(failedEvaluation,
-                                        evaluation.Target
-                                                  .IfTypeIs<TTarget>()
-                                                  .ElseDefault());
+                                        failedEvaluation.Target
+                                                        .IfTypeIs<TTarget>()
+                                                        .ElseDefault());
 
             return MessageGenerator.Detokenize(template, failedEvaluation.Parameters);
         }
