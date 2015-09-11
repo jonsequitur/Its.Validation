@@ -32,7 +32,5 @@ namespace Its.Validation
 
             return string.Empty;
         }
-
-        internal static readonly DefaultMessageGenerator Instance = new DefaultMessageGenerator();
     }
 }
