@@ -10,7 +10,7 @@ namespace Its.Validation
 {
     public static class MessageGenerator
     {
-        private static IValidationMessageGenerator current = new DebugMessageGenerator();
+        private static IValidationMessageGenerator current = new DefaultMessageGenerator();
 
         private static readonly Regex ParamsRegex = new Regex(
             @"{(?<key>[^{}:]*)(?:\:(?<format>.+))?}",
