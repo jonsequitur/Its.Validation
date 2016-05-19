@@ -27,7 +27,7 @@ var wontGoBadTooSoon =
 
 Transform and format the information for display:
 
-```
+```csharp
 var wontGoBadTooSoon = 
   Validate.That<Fruit>(fruit =>
       fruit.As("fruitname", f => f.Name).ExpirationDate.As("expiration") > DateTime.Now.AddDays(5.As("days_in_transit")))
@@ -50,7 +50,7 @@ var plan = new ValidationPlan<FruitBasket>
 
 Define rule dependencies:
 
-```
+```csharp
 var plan = new ValidationPlan<FruitBasket>
                {
                     basketHasFruit,               
