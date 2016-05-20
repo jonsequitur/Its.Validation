@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
+using System.Runtime.Remoting.Messaging;
+using System.Threading;
 
 namespace Its.Validation
 {
@@ -51,6 +53,8 @@ namespace Its.Validation
         /// <returns> A message describing the evaluation. </returns>
         private static string BuildMessage(RuleEvaluation evaluation)
         {
+            MessageContext.SetCurrentRuleEvaluation(evaluation);
+
             var parts = new List<string>();
 
             if (evaluation.Target != null)
@@ -85,6 +89,16 @@ namespace Its.Validation
                         {
                             // extension.Key is the Type
                             // the extension class should have a meaningful ToString override
+                            if ((extension.Value is SuccessMessageTemplate) && evaluation is FailedEvaluation)
+                            {
+                                continue;
+                            }
+
+                            if ((extension.Value is FailureMessageTemplate) && evaluation is SuccessfulEvaluation)
+                            {
+                                continue;
+                            }
+
                             parts.Add("Extension: " + extension.Key + ": " + extension.Value);
                         }
                     }
@@ -94,6 +108,21 @@ namespace Its.Validation
             }
 
             return string.Join(" / ", parts.ToArray());
+        }
+    }
+
+    internal static class MessageContext
+    {
+        private static readonly string RuleEvaluationKey = "__Its_Validation__RuleEvaluation";
+
+        internal static void SetCurrentRuleEvaluation(RuleEvaluation evaluation)
+        {
+            CallContext.LogicalSetData(RuleEvaluationKey, evaluation);
+        }
+
+        internal static RuleEvaluation GetCurrentRuleEvaluation()
+        {
+            return CallContext.LogicalGetData(RuleEvaluationKey) as RuleEvaluation;
         }
     }
 }
