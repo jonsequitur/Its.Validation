@@ -67,7 +67,7 @@ var failures = plan.Execute(basket);
 
 failures.Count(f => f.Message == "Your basket must contain some fruit.")
         .Should()
-        .Be(1));
+        .Be(1);
 ```
 
 Extend the validation results with your own types:
