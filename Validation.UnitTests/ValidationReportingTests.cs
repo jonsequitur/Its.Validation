@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using FluentAssertions;
 using Its.Validation.Configuration;
 using Its.Validation.UnitTests.TestClasses;
 using Moq;
@@ -750,6 +751,52 @@ namespace Its.Validation.UnitTests
             var report = new ValidationReport(new[] { new SuccessfulEvaluation { IsInternal = true } });
 
             Assert.That(report.Evaluations.Count(), Is.EqualTo(0));
+        }
+
+        [Test]
+        public void DebugMessageGenerator_shows_only_the_appropriate_messages()
+        {
+            var drat = Validate.That<Species>(s => false)
+                               .WithErrorMessage("drat");
+
+            var looksOk = Validate.That<Species>(species => true)
+                                  .WithSuccessMessage((successfulEvaluation, species) => "looks ok")
+                                  .WithErrorMessage((failedEvaluation, species) => "oops");
+
+            var alsoLooksOk = Validate.That<Species>(s => true)
+                                      .WithSuccessMessage(successfulEvaluation => "also looks ok")
+                                      .WithErrorMessage(failedEvaluation => "oops");
+
+            var passes = Validate.That<Individual>(c => true)
+                                 .WithErrorMessage((e, item) => string.Format("'{0}' failed.", item.Name));
+
+            var plan = new ValidationPlan<Species>
+            {
+                drat,
+                looksOk,
+                alsoLooksOk,
+                Validate.That<Species>(xs => xs.Individuals.Every(passes))
+            };
+            plan.MessageGenerator = new DebugMessageGenerator();
+
+            var message = plan.Execute(new Species
+            {
+                Individuals = new List<Individual>
+                {
+                    new Individual
+                    {
+                        Name = "Dumbo"
+                    }
+                }
+            }).ToString();
+
+            Console.WriteLine(message);
+
+            message.Should().Contain("drat");
+            message.Should().Contain("looks ok");
+            message.Should().Contain("also looks ok");
+            message.Should().NotContain("oops");
+            message.Should().Contain("Dumbo");
         }
 
         [Ignore("Fails, but may be a valid design change")]

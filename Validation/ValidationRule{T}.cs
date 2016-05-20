@@ -229,11 +229,22 @@ namespace Its.Validation
         /// <returns> A <see cref="System.String" /> that represents this instance. </returns>
         public override string ToString()
         {
-            var failureMessage = Result<FailureMessageTemplate>();
-            if (failureMessage != null)
+            var currentRuleEvaluation = MessageContext.GetCurrentRuleEvaluation();
+
+            var successMessage = Result<SuccessMessageTemplate>();
+            if (successMessage != null && 
+                currentRuleEvaluation is SuccessfulEvaluation)
             {
-                return failureMessage.GetMessage(null);
+                return successMessage.GetMessage(currentRuleEvaluation);
             }
+
+            var failureMessage = Result<FailureMessageTemplate>();
+            if (failureMessage != null && 
+                currentRuleEvaluation is FailedEvaluation)
+            {
+                return failureMessage.GetMessage(currentRuleEvaluation);
+            }
+
             var value = Result<ErrorCode<string>>();
             var code = value != null ? value.Value : "";
             return code;

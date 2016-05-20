@@ -8,3 +8,5 @@ packages/
 TestResults/
 _ReSharper.*
 *.xml
+*.ncrunchproject
+/_NCrunch_Its.Validation/StoredText

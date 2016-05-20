@@ -29,10 +29,5 @@ namespace Its.Validation
 
             return MessageGenerator.Detokenize(template, failedEvaluation.Parameters);
         }
-
-        public override string ToString()
-        {
-            return GetMessage(null);
-        }
     }
 }

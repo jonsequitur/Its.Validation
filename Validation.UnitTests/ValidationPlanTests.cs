@@ -3,6 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using FluentAssertions;
 using Its.Validation.Configuration;
 using Its.Validation.UnitTests.TestClasses;
 using Moq;
@@ -521,7 +523,19 @@ namespace Its.Validation.UnitTests
                         Is.EqualTo(10));
         }
 
-        [NUnit.Framework.Ignore("Scenario not finished")]
+        [Test]
+        public void Null_rules_cannot_be_added_to_a_ValidationPlans()
+        {
+            var plan = new ValidationPlan<string>();
+
+            IValidationRule<string> nullRule = null;
+
+            Action addNullRule = () => plan.Add(nullRule);
+
+            addNullRule.ShouldThrow<ArgumentNullException>();
+        }
+
+        [Ignore("Scenario not finished")]
         [Test]
         public void ValidationPlan_halts_on_first_failure_when_strategy_is_HaltOnFirstFailure()
         {

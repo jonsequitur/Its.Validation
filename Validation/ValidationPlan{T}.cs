@@ -3,7 +3,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using Its.Validation.Configuration;
@@ -92,6 +91,10 @@ namespace Its.Validation
         public ValidationPlan<TTarget> AddRule(
             IValidationRule<TTarget> rule)
         {
+            if (rule == null)
+            {
+                throw new ArgumentNullException(nameof(rule));
+            }
             rules.Add(rule);
             return this;
         }
