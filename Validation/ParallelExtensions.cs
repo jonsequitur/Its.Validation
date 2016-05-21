@@ -2,8 +2,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Its.Validation.Configuration;
+using System.Linq;
 
 namespace Its.Validation
 {
@@ -19,10 +19,7 @@ namespace Its.Validation
         /// <param name="source"> The items to be validated. </param>
         /// <param name="rule"> The validation rule to check. </param>
         /// <returns> True if all items in the sequence are valid; otherwise, false. </returns>
-        public static bool Parallel<T>(this IEnumerable<T> source, IValidationRule<T> rule)
-        {
-            return source.Parallel(rule.Check);
-        }
+        public static bool Parallel<T>(this IEnumerable<T> source, IValidationRule<T> rule) => source.Parallel(rule.Check);
 
         /// <summary>
         ///   Checks each item in a sequence against a validation rule in parallel.
@@ -31,12 +28,10 @@ namespace Its.Validation
         /// <param name="source"> The items to be validated. </param>
         /// <param name="validate"> A function that performs a validation against each item. </param>
         /// <returns> True if all items in the sequence are valid; otherwise, false. </returns>
-        public static bool Parallel<T>(this IEnumerable<T> source, Func<T, bool> validate)
-        {
-            return source
+        public static bool Parallel<T>(this IEnumerable<T> source, Func<T, bool> validate) =>
+            source
                 .Select(s => new { Target = s, ParentScope = ValidationScope.Current })
-                .ToArray() // force evaluation so that ValidationScope will be referenced from the current thread before parallellization
-                //.Do(validation => ValidationScope.Current = validation.ParentScope)
+                .ToArray()
                 .AsParallel()
                 .Select(s =>
                 {
@@ -47,6 +42,5 @@ namespace Its.Validation
                 })
                 .AsEnumerable()
                 .Every(s => s);
-        }
     }
 }

@@ -14,23 +14,21 @@ namespace Its.Validation
         /// <returns> A validation failure message <see cref="string" /> . </returns>
         public string GetMessage(RuleEvaluation evaluation)
         {
-            string template = evaluation.MessageTemplate;
+
+            var template = evaluation.MessageTemplate;
+
             if (!string.IsNullOrEmpty(template))
             {
-                if (evaluation.Parameters != null)
-                {
-                    return MessageGenerator.Detokenize(template, evaluation.Parameters);
-                }
-                return template;
+                return evaluation.Parameters != null
+                           ? MessageGenerator.Detokenize(template, evaluation.Parameters)
+                           : template;
             }
 
             var failure = evaluation as FailedEvaluation;
-            if (failure != null)
-            {
-                return failure.ErrorCode;
-            }
 
-            return string.Empty;
+            return failure != null
+                       ? failure.ErrorCode
+                       : string.Empty;
         }
     }
 }

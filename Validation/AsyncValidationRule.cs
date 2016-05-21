@@ -14,7 +14,7 @@ namespace Its.Validation
         {
             if (taskFactory == null)
             {
-                throw new ArgumentNullException("taskFactory");
+                throw new ArgumentNullException(nameof(taskFactory));
             }
             this.taskFactory = taskFactory;
         }
@@ -39,9 +39,8 @@ namespace Its.Validation
             taskFactory = CreateTask(setup, validate);
         }
 
-        private Func<TTarget, ValidationScope, Task<bool>> CreateTask(Func<TTarget, Task<TTarget>> setup, Func<TTarget, bool> validate)
-        {
-            return (target, parentScope) =>
+        private Func<TTarget, ValidationScope, Task<bool>> CreateTask(Func<TTarget, Task<TTarget>> setup, Func<TTarget, bool> validate) =>
+            (target, parentScope) =>
             {
                 var tcs = new TaskCompletionSource<bool>();
                 var task = setup(target);
@@ -58,7 +57,6 @@ namespace Its.Validation
                                       }));
                 return tcs.Task;
             };
-        }
 
         private void RecordResult(ValidationScope scope, bool result, TTarget target)
         {
@@ -119,10 +117,7 @@ namespace Its.Validation
             return task.Result;
         }
 
-        protected internal override ValidationRule<TTarget> Clone()
-        {
-            var clone = new AsyncValidationRule<TTarget>(this);
-            return clone;
-        }
+        protected internal override ValidationRule<TTarget> Clone() => 
+            new AsyncValidationRule<TTarget>(this);
     }
 }

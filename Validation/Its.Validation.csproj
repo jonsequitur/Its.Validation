@@ -95,6 +95,7 @@
     <Compile Include="AsyncValidationRule.cs" />
     <Compile Include="FailureMessageTemplate{T}.cs" />
     <Compile Include="MemberPath.cs" />
+    <Compile Include="MessageContext.cs" />
     <Compile Include="MessageGenerator.cs" />
     <Compile Include="IValidationMessageGenerator.cs" />
     <Compile Include="IValidationRule.cs">

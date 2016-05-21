@@ -38,7 +38,7 @@ namespace Its.Validation
         {
             if (messageGenerator == null)
             {
-                throw new ArgumentNullException("messageGenerator");
+                throw new ArgumentNullException(nameof(messageGenerator));
             }
             MessageGenerator = messageGenerator;
         }
@@ -51,7 +51,7 @@ namespace Its.Validation
         {
             if (validationRules == null)
             {
-                throw new ArgumentNullException("validationRules");
+                throw new ArgumentNullException(nameof(validationRules));
             }
             rules.AddRange(validationRules);
         }
@@ -64,7 +64,7 @@ namespace Its.Validation
         {
             if (fromPlan == null)
             {
-                throw new ArgumentNullException("fromPlan");
+                throw new ArgumentNullException(nameof(fromPlan));
             }
             rules = fromPlan.rules;
             MessageGenerator = fromPlan.MessageGenerator;
@@ -126,10 +126,7 @@ namespace Its.Validation
         /// <remarks>
         ///   This method is equivalent to <see cref="Add" /> . It is included to provide support for collection initializer syntax.
         /// </remarks>
-        public void Add(IValidationRule<TTarget> rule)
-        {
-            AddRule(rule);
-        }
+        public void Add(IValidationRule<TTarget> rule) => AddRule(rule);
 
         /// <summary>
         ///   Removes a rule to the validation plan.
@@ -201,24 +198,20 @@ namespace Its.Validation
             return newPlan;
         }
 
+        /// <summary>
+        ///   Performs the actual rule check.
+        /// </summary>
         protected override bool PerformCheck(TTarget target, ValidationScope scope = null)
         {
             using (scope = new ValidationScope(scope) { Rule = this })
             {
-                if (scope.HaltsOnFirstFailure)
-                {
-                    // allow the scope to override in favor of halting on first failure. (overrides in the other direction are not supported.)
-                    return EvaluationStrategy<TTarget>.HaltOnFirstFailure.Evaluate(this, target, scope);
-                }
-
-                return Strategy.Evaluate(this, target, scope);
+                return scope.HaltsOnFirstFailure
+                           ? EvaluationStrategy<TTarget>.HaltOnFirstFailure.Evaluate(this, target, scope)
+                           : Strategy.Evaluate(this, target, scope);
             }
         }
 
-        protected internal override ValidationRule<TTarget> Clone()
-        {
-            return new ValidationPlan<TTarget>(this);
-        }
+        protected internal override ValidationRule<TTarget> Clone() => new ValidationPlan<TTarget>(this);
 
         /// <summary>
         ///   Iterates all rules in order of dependency.
@@ -264,7 +257,7 @@ namespace Its.Validation
 
         private static IEnumerable<IValidationRule<TTarget>> AllPreconditions(ValidationRule<TTarget> rule)
         {
-            if (rule != null && rule.preconditions != null)
+            if (rule?.preconditions != null)
             {
                 foreach (var precondition in rule.preconditions)
                 {
@@ -302,30 +295,18 @@ namespace Its.Validation
         ///   Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns> A <see cref="System.String" /> that represents this instance. </returns>
-        public override string ToString()
-        {
-            return string.Format("{2} (ValidationPlan<{0}> with {1} rules)",
-                                 typeof (TTarget).Name,
-                                 rules.Count,
-                                 base.ToString());
-        }
+        public override string ToString() => $"{base.ToString()} (ValidationPlan<{typeof (TTarget).Name}> with {rules.Count} rules)";
 
         /// <summary>
         ///   Returns an enumerator that iterates through a collection.
         /// </summary>
         /// <returns> An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection. </returns>
-        public IEnumerator GetEnumerator()
-        {
-            return rules.GetEnumerator();
-        }
+        public IEnumerator GetEnumerator() => rules.GetEnumerator();
 
         /// <summary>
         ///   Returns an enumerator that iterates through the collection.
         /// </summary>
         /// <returns> A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection. </returns>
-        IEnumerator<IValidationRule<TTarget>> IEnumerable<IValidationRule<TTarget>>.GetEnumerator()
-        {
-            return rules.GetEnumerator();
-        }
+        IEnumerator<IValidationRule<TTarget>> IEnumerable<IValidationRule<TTarget>>.GetEnumerator() => rules.GetEnumerator();
     }
 }

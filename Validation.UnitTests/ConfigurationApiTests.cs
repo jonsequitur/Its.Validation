@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using FluentAssertions;
 using Its.Validation.Configuration;
 using Its.Validation.UnitTests.TestClasses;
 using Moq;
@@ -264,7 +265,7 @@ namespace Its.Validation.UnitTests
             var boots = new Individual { Name = "Boots", Species = cat };
             cat.Individuals.AddRange(new[] { fluffy, boots });
 
-            Assert.IsFalse(plan.Execute(cat).HasFailures);
+            plan.Execute(cat).HasFailures.Should().BeFalse();
 
             var fido = new Individual { Name = "Fido", Species = new Species("Canis familiaris") };
             cat.Individuals.Add(fido);

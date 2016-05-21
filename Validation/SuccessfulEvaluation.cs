@@ -26,13 +26,8 @@ namespace Its.Validation
         /// <remarks>
         ///   This template may contain tokens intended to be filled in with parameters collected during the rule evaluation.
         /// </remarks>
-        public override string MessageTemplate
-        {
-            get
-            {
-                return Result<SuccessMessageTemplate, string>(template => template.GetMessage(this),
-                                                           orElse: () => base.MessageTemplate);
-            }
-        }
+        public override string MessageTemplate =>
+            Result<SuccessMessageTemplate, string>(template => template.GetMessage(this),
+                                                   orElse: () => base.MessageTemplate);
     }
 }

@@ -25,14 +25,8 @@ namespace Its.Validation
         ///   Gets or sets the error code.
         /// </summary>
         /// <value> The error code. </value>
-        public string ErrorCode
-        {
-            get
-            {
-                return Result<ErrorCode<string>, string>(ec => ec.Value,
-                                                      orElse: () => string.Empty);
-            }
-        }
+        public string ErrorCode => Result<ErrorCode<string>, string>(ec => ec.Value,
+                                                                     orElse: () => string.Empty);
 
         /// <summary>
         ///   Gets the message template for the rule evaluation.
@@ -40,13 +34,7 @@ namespace Its.Validation
         /// <remarks>
         ///   This template may contain tokens intended to be filled in with parameters collected during the rule evaluation.
         /// </remarks>
-        public override string MessageTemplate
-        {
-            get
-            {
-                return Result<FailureMessageTemplate, string>(template => template.GetMessage(this),
-                                                           orElse: () => base.MessageTemplate);
-            }
-        }
+        public override string MessageTemplate => Result<FailureMessageTemplate, string>(template => template.GetMessage(this),
+                                                                                         orElse: () => base.MessageTemplate);
     }
 }

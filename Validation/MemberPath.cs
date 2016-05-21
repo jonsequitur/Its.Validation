@@ -36,7 +36,8 @@ namespace Its.Validation
 
             while (part != null)
             {
-                if (part.NodeType == ExpressionType.Call || part.NodeType == ExpressionType.ArrayIndex)
+                if (part.NodeType == ExpressionType.Call ||
+                    part.NodeType == ExpressionType.ArrayIndex)
                 {
                     throw new NotSupportedException("MemberPath must consist only of member access sub-expressions");
                 }

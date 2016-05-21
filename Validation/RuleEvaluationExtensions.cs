@@ -8,9 +8,7 @@ namespace Its.Validation
     internal static class RuleEvaluationExtensions
     {
         public static IEnumerable<TEvaluation> NonInternal<TEvaluation>(this IEnumerable<TEvaluation> source)
-            where TEvaluation : RuleEvaluation
-        {
-            return source.Where(e => !e.IsInternal);
-        }
+            where TEvaluation : RuleEvaluation =>
+                source.Where(e => !e.IsInternal);
     }
 }

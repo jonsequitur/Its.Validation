@@ -2,10 +2,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
+using System.Linq;
 using System.Reflection;
-using System.Runtime.Remoting.Messaging;
-using System.Threading;
 
 namespace Its.Validation
 {
@@ -29,7 +27,7 @@ namespace Its.Validation
             if (evaluation.Rule != null)
             {
                 var failure = evaluation as FailedEvaluation;
-                if (failure != null && !string.IsNullOrEmpty(failure.ErrorCode))
+                if (!string.IsNullOrEmpty(failure?.ErrorCode))
                 {
                     if (messages.ContainsKey(failure.ErrorCode))
                     {
@@ -59,70 +57,48 @@ namespace Its.Validation
 
             if (evaluation.Target != null)
             {
-                parts.Add(string.Format(CultureInfo.CurrentCulture, "Target: {0}", evaluation.Target));
+                parts.Add($"Target: {evaluation.Target}");
             }
 
             if (evaluation.Parameters != null)
             {
-                foreach (var parameter in evaluation.Parameters)
-                {
-                    parts.Add(string.Format(CultureInfo.CurrentCulture, "{0}: {1}", parameter.Key, parameter.Value));
-                }
+                parts.AddRange(evaluation.Parameters.Select(parameter => $"{parameter.Key}: {parameter.Value}"));
             }
 
-            if (evaluation.Rule != null)
+            // add details about any extensions
+            // reflecting out the field bypasses the requirement to know the rule's generic type
+            var extensionsField = evaluation.Rule?
+                                            .GetType()
+                                            .GetField("extensions",
+                                                      BindingFlags.NonPublic |
+                                                      BindingFlags.Instance);
+            if (extensionsField != null)
             {
-                // add details about any extensions
-                // reflecting out the field bypasses the requirement to know the rule's generic type
-                var extensionsField = evaluation
-                    .Rule
-                    .GetType()
-                    .GetField("extensions",
-                              BindingFlags.NonPublic |
-                              BindingFlags.Instance);
-                if (extensionsField != null)
+                var extensions = extensionsField.GetValue(evaluation.Rule) as Dictionary<Type, object>;
+                if (extensions != null)
                 {
-                    var extensions = extensionsField.GetValue(evaluation.Rule) as Dictionary<Type, object>;
-                    if (extensions != null)
+                    foreach (var extension in extensions)
                     {
-                        foreach (var extension in extensions)
+                        // extension.Key is the Type
+                        // the extension class should have a meaningful ToString override
+                        if ((extension.Value is SuccessMessageTemplate) && evaluation is FailedEvaluation)
                         {
-                            // extension.Key is the Type
-                            // the extension class should have a meaningful ToString override
-                            if ((extension.Value is SuccessMessageTemplate) && evaluation is FailedEvaluation)
-                            {
-                                continue;
-                            }
-
-                            if ((extension.Value is FailureMessageTemplate) && evaluation is SuccessfulEvaluation)
-                            {
-                                continue;
-                            }
-
-                            parts.Add("Extension: " + extension.Key + ": " + extension.Value);
+                            continue;
                         }
-                    }
 
-                    parts.Add("Rule: " + evaluation.Rule);
+                        if ((extension.Value is FailureMessageTemplate) && evaluation is SuccessfulEvaluation)
+                        {
+                            continue;
+                        }
+
+                        parts.Add("Extension: " + extension.Key + ": " + extension.Value);
+                    }
                 }
+
+                parts.Add("Rule: " + evaluation.Rule);
             }
 
             return string.Join(" / ", parts.ToArray());
-        }
-    }
-
-    internal static class MessageContext
-    {
-        private static readonly string RuleEvaluationKey = "__Its_Validation__RuleEvaluation";
-
-        internal static void SetCurrentRuleEvaluation(RuleEvaluation evaluation)
-        {
-            CallContext.LogicalSetData(RuleEvaluationKey, evaluation);
-        }
-
-        internal static RuleEvaluation GetCurrentRuleEvaluation()
-        {
-            return CallContext.LogicalGetData(RuleEvaluationKey) as RuleEvaluation;
         }
     }
 }

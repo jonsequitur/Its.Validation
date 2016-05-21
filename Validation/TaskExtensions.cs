@@ -73,16 +73,13 @@ namespace Its.Validation
                 {
                     var rule = forRule as ValidationRule<T>;
 
-                    if (rule != null)
-                    {
-                        // there are preconditions, so each will need its own task, and main task must wait on them all
-                        rule.preconditions
-                            .ForEach(pre => tasks.GetOrAdd(rule,
-                                                           _ => pre.ToTask(target,
-                                                                           tasks,
-                                                                           scope,
-                                                                           TaskCreationOptions.AttachedToParent)));
-                    }
+                    // there are preconditions, so each will need its own task, and main task must wait on them all
+                    rule?.preconditions
+                         .ForEach(pre => tasks.GetOrAdd(rule,
+                                                        _ => pre.ToTask(target,
+                                                                        tasks,
+                                                                        scope,
+                                                                        TaskCreationOptions.AttachedToParent)));
 
                     using (var innerScope = new ValidationScope(scope))
                     {
@@ -107,7 +104,10 @@ namespace Its.Validation
         {
             if (t.IsFaulted)
             {
-                tcs.TrySetException(t.Exception.InnerExceptions);
+                if (t.Exception != null)
+                {
+                    tcs.TrySetException(t.Exception.InnerExceptions);
+                }
             }
             else if (t.IsCanceled)
             {
@@ -123,7 +123,10 @@ namespace Its.Validation
         {
             if (t.IsFaulted)
             {
-                tcs.TrySetException(t.Exception.InnerExceptions);
+                if (t.Exception != null)
+                {
+                    tcs.TrySetException(t.Exception.InnerExceptions);
+                }
             }
             else if (t.IsCanceled)
             {

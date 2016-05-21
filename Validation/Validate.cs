@@ -70,6 +70,7 @@ namespace Its.Validation.Configuration
         public static bool Every<TTarget>(this IEnumerable<TTarget> list, Func<TTarget, bool> condition)
         {
             var result = true;
+
             foreach (var target in list)
             {
                 if (!condition(target))
@@ -92,10 +93,8 @@ namespace Its.Validation.Configuration
         ///    cref="Every{TTarget}(System.Collections.Generic.IEnumerable{TTarget},System.Func{TTarget,bool})" /> will force evaluation of the entire sequence and return all results.
         /// </remarks>
         /// <returns> </returns>
-        public static bool Every<TTarget>(this IEnumerable<TTarget> list, IValidationRule<TTarget> rule)
-        {
-            return list.Every(rule.Check);
-        }
+        public static bool Every<TTarget>(this IEnumerable<TTarget> list, IValidationRule<TTarget> rule) =>
+            list.Every(rule.Check);
 
         /// <summary>
         ///   Associates a member name with a validation rule.
@@ -107,10 +106,8 @@ namespace Its.Validation.Configuration
         /// <remarks>
         ///   This need not match the actual object model. It is a mechanism for grouping rules and does not affect the execution or evaluation of the rules in any way.
         /// </remarks>
-        public static ValidationRule<TTarget> ForMember<TTarget>(this ValidationRule<TTarget> rule, string memberPath)
-        {
-            return rule.With(new MemberPath(memberPath));
-        }
+        public static ValidationRule<TTarget> ForMember<TTarget>(this ValidationRule<TTarget> rule, string memberPath) =>
+            rule.With(new MemberPath(memberPath));
 
         /// <summary>
         ///   Associates a member name with a validation rule.
@@ -120,11 +117,10 @@ namespace Its.Validation.Configuration
         /// <param name="rule"> The rule. </param>
         /// <param name="expression"> An expression identifying the member to which the validation rule is associated. </param>
         /// <returns> A clone of the source validation rule. </returns>
-        public static ValidationRule<TTarget> ForMember<TTarget, TReturn>(this ValidationRule<TTarget> rule,
-                                                                          Expression<Func<TTarget, TReturn>> expression)
-        {
-            return rule.ForMember(MemberPath.FromExpression(expression));
-        }
+        public static ValidationRule<TTarget> ForMember<TTarget, TReturn>(
+            this ValidationRule<TTarget> rule,
+            Expression<Func<TTarget, TReturn>> expression) =>
+                rule.ForMember(MemberPath.FromExpression(expression));
 
         /// <summary>
         ///   Builds a <see cref="ValidationRule{TTarget}" /> .
@@ -132,10 +128,8 @@ namespace Its.Validation.Configuration
         /// <typeparam name="TTarget"> The type of the validation target against which the rule can be checked. </typeparam>
         /// <param name="condition"> The condition. </param>
         /// <returns> A <see cref="ValidationRule{TTarget}" /> for the specified condition. </returns>
-        public static ValidationRule<TTarget> That<TTarget>(Func<TTarget, bool> condition)
-        {
-            return new ValidationRule<TTarget>(condition);
-        }
+        public static ValidationRule<TTarget> That<TTarget>(Func<TTarget, bool> condition) =>
+            new ValidationRule<TTarget>(condition);
 
         /// <summary>
         ///   Declares a precondition, which must evaluate to true before the <paramref name="rule" /> will be evaluated.
@@ -147,11 +141,13 @@ namespace Its.Validation.Configuration
         public static ValidationRule<TTarget> When<TTarget>(this ValidationRule<TTarget> rule,
                                                             params IValidationRule<TTarget>[] preconditions)
         {
-            // TODO: (WhenAll) naming? is WhenAny possible/desirable? 
-            // TODO: (WhenAll) what about Or?
+            if (rule == null)
+            {
+                throw new ArgumentNullException(nameof(rule));
+            }
             if (preconditions == null)
             {
-                throw new ArgumentNullException("preconditions");
+                throw new ArgumentNullException(nameof(preconditions));
             }
 
             var newRule = rule.Clone();
@@ -176,9 +172,13 @@ namespace Its.Validation.Configuration
         public static ValidationRule<TTarget> When<TTarget>(this ValidationRule<TTarget> rule,
                                                             Func<TTarget, bool> precondition)
         {
+            if (rule == null)
+            {
+                throw new ArgumentNullException(nameof(rule));
+            }
             if (precondition == null)
             {
-                throw new ArgumentNullException("precondition");
+                throw new ArgumentNullException(nameof(precondition));
             }
 
             var preconditionRule = new ValidationRule<TTarget>(precondition) { CreatesEvaluationsAsInternal = true };
@@ -237,7 +237,7 @@ namespace Its.Validation.Configuration
             Func<FailedEvaluation, string> buildMessage)
         {
             var clone = rule.Clone();
-            clone.Set<FailureMessageTemplate>(new FailureMessageTemplate(buildMessage));
+            clone.Set(new FailureMessageTemplate(buildMessage));
             return clone;
         }
 
@@ -334,9 +334,7 @@ namespace Its.Validation.Configuration
 
         internal static AsyncValidationRule<TTarget> Async<TTarget>(
             Func<TTarget, Task<TTarget>> setup,
-            Func<TTarget, bool> validate)
-        {
-            return new AsyncValidationRule<TTarget>(setup, validate);
-        }
+            Func<TTarget, bool> validate) =>
+                new AsyncValidationRule<TTarget>(setup, validate);
     }
 }
