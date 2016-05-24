@@ -3,9 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using FluentAssertions;
 using Its.Validation.Configuration;
 using Its.Validation.UnitTests.TestClasses;
-using Moq;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 
@@ -237,28 +237,29 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void When_precondition_is_first_class_rule_in_plan_precondition_is_only_evaluated_once()
+        public void When_precondition_is_first_class_rule_in_plan_precondition_is_only_evaluated_once()
         {
-            var precondition = new Mock<IValidationRule<Species>>();
-            precondition
-                .Setup(pc => pc.Check(It.IsAny<Species>(), It.IsAny<ValidationScope>()))
-                .Returns(false);
+            var callCount = 0;
+            var precondition = Validate.That<Species>(_ =>
+            {
+                callCount++;
+                return false;
+            });
 
             var plan = new ValidationPlan<Species>
             {
-                precondition.Object,
+                precondition,
                 // these rules will throw if the precondition does not short circuit them
                 Validate.That<Species>(species => species.Name.Length > 0)
-                    .When(precondition.Object),
+                    .When(precondition),
                 Validate.That<Species>(species => !species.Name.Contains("!"))
-                    .When(precondition.Object)
+                    .When(precondition)
             };
 
             var nameless = new Species { Name = null };
             plan.Execute(nameless);
 
-            // we only want the precondition called once. the value should be stored.
-            precondition.Verify(pc => pc.Check(It.IsAny<Species>()), Times.Once());
+            callCount.Should().Be(1);
         }
 
         [Test]
@@ -358,7 +359,7 @@ namespace Its.Validation.UnitTests
                 return true;
             };
 
-            var precondition = Validate.That<string>(counter).WithMessage("precondition");
+            var precondition = Validate.That(counter).WithMessage("precondition");
 
             var plan = new ValidationPlan<string>
             {
@@ -420,25 +421,30 @@ namespace Its.Validation.UnitTests
             When_specifying_multiple_preconditions_and_one_precondition_fails_subsequent_preconditions_are_not_evaluated
             ()
         {
-            var precondition1 = new Mock<IValidationRule<string>>();
-            precondition1
-                .Setup(r => r.Check(It.IsAny<string>()))
-                .Returns(false);
-            var precondition2 = new Mock<IValidationRule<string>>();
-            precondition2
-                .Setup(r => r.Check(It.IsAny<string>())).Returns(true);
+            var falsePreconditionCallCount = 0;
+            var truePreconditionCallCount = 0;
+            var falsePrecondition = Validate.That<string>(_ =>
+            {
+                falsePreconditionCallCount++;
+                return false;
+            });
+            var truePrecondition = Validate.That<string>(_ =>
+            {
+                truePreconditionCallCount++;
+                return true;
+            });
 
             // this rule will fail but should be short circuited
             var rule = Validate.That<string>(s => false)
-                .When(precondition1.Object)
-                .When(precondition2.Object);
+                               .When(falsePrecondition)
+                               .When(truePrecondition);
 
             var plan = new ValidationPlan<string> { rule };
 
             var report = plan.Execute("");
 
-            precondition1.Verify(m => m.Check(It.IsAny<string>()), Times.Once());
-            precondition2.Verify(m => m.Check(It.IsAny<string>()), Times.Never());
+            falsePreconditionCallCount.Should().Be(1);
+            truePreconditionCallCount.Should().Be(0);
             Assert.True(!report.Failures.Any(f => f.Rule == rule));
         }
 

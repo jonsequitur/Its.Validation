@@ -2,14 +2,12 @@
 
 using System;
 using System.Collections.Generic;
+using Its.Validation.Configuration;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Its.Validation.Configuration;
 using Its.Validation.UnitTests.TestClasses;
-using Moq;
 using NUnit.Framework;
-using Assert = NUnit.Framework.Assert;
 
 namespace Its.Validation.UnitTests
 {
@@ -268,7 +266,7 @@ namespace Its.Validation.UnitTests
             Assert.That(report.Failures.Count(f => f.Message == "oops"), Is.EqualTo(0));
         }
 
-        [NUnit.Framework.Ignore("Fix requires some design consideration")]
+        [Ignore("Fix requires some design consideration")]
         [Test]
         public void When_parameters_collide_in_the_ValidationScope_they_can_be_reported_incorrectly()
         {
@@ -299,16 +297,16 @@ namespace Its.Validation.UnitTests
                 species => species.As("species", s => s.Name) != null);
             var hasFourLegs = Validate.That<Species>(
                 s => s.NumberOfLegs.As("legs") == 4)
-                .WithErrorMessage("This species only has {legs} legs");
+                                      .WithErrorMessage("This species only has {legs} legs");
             var isMammal = Validate.That<Species>(s => s.Genus.Family.Order.Class.Name == "Mammalia")
-                .WithErrorMessage("This species is not a mammal.");
+                                   .WithErrorMessage("This species is not a mammal.");
             var isNotExtinct = Validate.That<Species>(s => !s.IsExtinct)
-                .WithErrorMessage("This species is extinct.");
+                                       .WithErrorMessage("This species is extinct.");
 
             return new ValidationPlan<Species>
             {
                 isNotNull,
-                isMammal.When(isNotNull),
+                isMammal.When(isNotNull),   
                 hasFourLegs.When(isNotNull),
                 isNotExtinct.When(isNotNull)
             }
@@ -316,14 +314,25 @@ namespace Its.Validation.UnitTests
                 .WithSuccessMessage("A fine pet!");
         }
 
-        private static Species Tyrannosaurus()
-        {
-            var tyrannosaurus = new Mock<Species>();
-            tyrannosaurus.Setup(m => m.Name).Returns("T. Rex");
-            tyrannosaurus.Setup(m => m.Genus.Family.Order.Class.Name).Returns("Reptilia");
-            tyrannosaurus.Setup(m => m.IsExtinct).Returns(true);
-            tyrannosaurus.Setup(m => m.NumberOfLegs).Returns(2);
-            return tyrannosaurus.Object;
-        }
+        private static Species Tyrannosaurus() =>
+            new Species
+            {
+                Name = "T. Rex",
+                IsExtinct = true,
+                NumberOfLegs = 2,
+                Genus = new Genus
+                {
+                    Family = new Family
+                    {
+                        Order = new TestClasses.Order
+                        {
+                            Class = new Class
+                            {
+                                Name = "Reptilia"
+                            }
+                        }
+                    }
+                }
+            };
     }
 }

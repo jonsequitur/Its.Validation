@@ -8,29 +8,14 @@ namespace Its.Validation.UnitTests.TestClasses
     [DebuggerStepThrough]
     public class Individual
     {
-        private List<Individual> children = new List<Individual>();
-
         public string Name { get; set; }
 
         public Species Species { get; set; }
 
         public Individual Parent { get; set; }
 
-        public List<Individual> Children
-        {
-            get
-            {
-                return children;
-            }
-            set
-            {
-                children = value;
-            }
-        }
+        public List<Individual> Children { get; set; } = new List<Individual>();
 
-        public override string ToString()
-        {
-            return GetType() + " (\"" + Name + "\")";
-        }
+        public override string ToString() => Name;
     }
 }

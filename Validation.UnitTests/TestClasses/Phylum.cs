@@ -9,27 +9,12 @@ namespace Validation.Tests.TestClasses
 {
     public class Phylum
     {
-        private List<Class> classes = new List<Class>();
+        public Kingdom Kingdom { get; set; }
 
-        public Phylum()
-        {
-        }
+        public string Name { get; set; }
 
-        public Phylum(string name)
-        {
-            Name = name;
-        }
+        public IList<Class> Classes { get; } = new List<Class>();
 
-        public virtual Kingdom Kingdom { get; set; }
-
-        public virtual string Name { get; set; }
-
-        public virtual List<Class> Classes
-        {
-            get
-            {
-                return classes;
-            }
-        }
+        public override string ToString() => Name;
     }
 }

@@ -7,17 +7,10 @@ namespace Its.Validation.UnitTests.TestClasses
 {
     public class Order
     {
-        public Order()
-        {
-        }
+        public Class Class { get; set; }
 
-        public Order(string name)
-        {
-            Name = name;
-        }
+        public string Name { get; set; }
 
-        public virtual Class Class { get; set; }
-
-        public virtual string Name { get; set; }
+        public override string ToString() => Name;
     }
 }

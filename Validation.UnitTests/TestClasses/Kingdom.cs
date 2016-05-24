@@ -9,25 +9,10 @@ namespace Its.Validation.UnitTests.TestClasses
 {
     public class Kingdom
     {
-        private List<Phylum> phylums = new List<Phylum>();
+        public string Name { get; set; }
 
-        public Kingdom()
-        {
-        }
+        public List<Phylum> Phylums { get; } = new List<Phylum>();
 
-        public Kingdom(string name)
-        {
-            Name = name;
-        }
-
-        public virtual string Name { get; set; }
-
-        public virtual List<Phylum> Phylums
-        {
-            get
-            {
-                return phylums;
-            }
-        }
+        public override string ToString() => Name;
     }
 }
