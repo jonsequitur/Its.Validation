@@ -14,14 +14,8 @@ namespace Its.Validation
             this.value = value ?? string.Empty;
         }
 
-        public override string ToString()
-        {
-            return GetType().Name + ": " + value;
-        }
+        public override string ToString() => GetType().Name + ": " + value;
 
-        public virtual string GetMessage(RuleEvaluation evaluation)
-        {
-            return value;
-        }
+        public virtual string GetMessage(RuleEvaluation evaluation) => value;
     }
 }

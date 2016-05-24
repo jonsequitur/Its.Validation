@@ -17,7 +17,7 @@ namespace Its.Validation
         {
             if (ruleEvaluation == null)
             {
-                throw new ArgumentNullException("ruleEvaluation");
+                throw new ArgumentNullException(nameof(ruleEvaluation));
             }
             RuleEvaluation = ruleEvaluation;
         }

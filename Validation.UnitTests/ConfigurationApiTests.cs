@@ -3,9 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using FluentAssertions;
 using Its.Validation.Configuration;
 using Its.Validation.UnitTests.TestClasses;
-using Moq;
 using NUnit.Framework;
 using Validation.Tests.TestClasses;
 using Assert = NUnit.Framework.Assert;
@@ -26,26 +26,27 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void Every_Func_overload_evaluates_every_item_without_short_circuiting()
+        public void Every_Func_overload_evaluates_every_item_without_short_circuiting()
         {
             var rules = new List<IValidationRule<string>>();
+            int callCount = 0;
+
             for (var i = 0; i < 10; i++)
             {
-                var rule = new Mock<IValidationRule<string>>();
-                rule.Setup(r => r.Check(It.IsAny<string>())).Returns(false);
-                rules.Add(rule.Object);
+                rules.Add(Validate.That<string>(s =>
+                {
+                    callCount++;
+                    return false;
+                }));
             }
 
             Assert.AreEqual(false, rules.Every(r => r.Check(string.Empty)));
 
-            foreach (var rule in rules)
-            {
-                Mock.Get(rule).VerifyAll();
-            }
+            callCount.Should().Be(10);
         }
 
         [Test]
-        public virtual void Every_rule_overload_evaluates_every_item_without_short_circuiting()
+        public void Every_rule_overload_evaluates_every_item_without_short_circuiting()
         {
             var hasAName = Validate.That<Individual>(s => !string.IsNullOrWhiteSpace(s.Name));
             var plan = new ValidationPlan<Species>
@@ -58,7 +59,7 @@ namespace Its.Validation.UnitTests
                 {
                     new Individual(),
                     new Individual(),
-                    new Individual(),
+                    new Individual()
                 }
             };
 
@@ -68,7 +69,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void Dependencies_can_be_declared_within_expression_using_Validate_That()
+        public void Dependencies_can_be_declared_within_expression_using_Validate_That()
         {
             var plan = new ValidationPlan<IEnumerable<Species>>();
             plan
@@ -96,7 +97,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void Dependencies_can_be_declared_using_a_func()
+        public void Dependencies_can_be_declared_using_a_func()
         {
             var plan = new ValidationPlan<IEnumerable<Species>>();
             plan
@@ -121,7 +122,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void Dependencies_can_be_declared_using_optional_parameter_on_AddRule()
+        public void Dependencies_can_be_declared_using_optional_parameter_on_AddRule()
         {
             var plan = new ValidationPlan<Species>();
 
@@ -139,7 +140,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void ErrorCode_can_be_declared_using_optional_parameter_on_AddRule()
+        public void ErrorCode_can_be_declared_using_optional_parameter_on_AddRule()
         {
             var plan = new ValidationPlan<Species>();
 
@@ -209,7 +210,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void ForMember_using_func_returns_expected_member_name_for_immediate_property()
+        public void ForMember_using_func_returns_expected_member_name_for_immediate_property()
         {
             var rule = new ValidationPlan<Species>
             {
@@ -222,7 +223,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void ForMember_using_func_returns_expected_member_name_for_chained_property()
+        public void ForMember_using_func_returns_expected_member_name_for_chained_property()
         {
             var rule = new ValidationPlan<Phylum>
             {
@@ -235,21 +236,21 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void ForMember_using_func_throws_for_extension_method()
+        public void ForMember_using_func_throws_for_extension_method()
         {
             Assert.Throws<NotSupportedException>(
                 () => Validate.That<Species>(s => false).ForMember(s => s.Individuals.First()));
         }
 
         [Test]
-        public virtual void ForMember_using_expression_throws_not_supported_for_method()
+        public void ForMember_using_expression_throws_not_supported_for_method()
         {
             Assert.Throws<NotSupportedException>(
                 () => Validate.That<Species>(s => false).ForMember(s => s.AddIndividual(null)));
         }
 
         [Test]
-        public virtual void A_rule_can_be_instantiated_and_evaluated_during_another_rules_execution()
+        public void A_rule_can_be_instantiated_and_evaluated_during_another_rules_execution()
         {
             var plan = new ValidationPlan<Species>();
 
@@ -264,7 +265,7 @@ namespace Its.Validation.UnitTests
             var boots = new Individual { Name = "Boots", Species = cat };
             cat.Individuals.AddRange(new[] { fluffy, boots });
 
-            Assert.IsFalse(plan.Execute(cat).HasFailures);
+            plan.Execute(cat).HasFailures.Should().BeFalse();
 
             var fido = new Individual { Name = "Fido", Species = new Species("Canis familiaris") };
             cat.Individuals.Add(fido);
@@ -279,7 +280,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void One_rule_can_be_evaluated_inside_another_without_framework_being_aware_of_it()
+        public void One_rule_can_be_evaluated_inside_another_without_framework_being_aware_of_it()
         {
             var individualNameRule = Validate.That<Individual>(i => !string.IsNullOrEmpty(i.Name))
                 .WithErrorCode("Name");
@@ -307,7 +308,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void Rule_can_validate_children_using_func()
+        public void Rule_can_validate_children_using_func()
         {
             var cat = new Species("Felis silvestris");
             var mutants = new Species("Os mutantes");
@@ -325,7 +326,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void Rules_can_be_aggregated_from_function_calls()
+        public void Rules_can_be_aggregated_from_function_calls()
         {
             var plan = new ValidationPlan<Species>();
             plan.AddRule(Validate.That<Species>(IndividualsAreAllOfSpecies().Check));
@@ -351,7 +352,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void Rule_validates_using_a_func()
+        public void Rule_validates_using_a_func()
         {
             var rule = Validate.That<Species>(species =>
                                               species.Individuals.All(
@@ -364,14 +365,14 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void Setting_message_generator_to_null_does_not_cause_Current_to_return_null()
+        public void Setting_message_generator_to_null_does_not_cause_Current_to_return_null()
         {
             MessageGenerator.Current = null;
             Assert.IsNotNull(MessageGenerator.Current);
         }
 
         [Test]
-        public virtual void ValidationPlan_params_array_ctor_can_be_used_to_combine_plans()
+        public void ValidationPlan_params_array_ctor_can_be_used_to_combine_plans()
         {
             var plan1 = new ValidationPlan<string>
             {
@@ -393,13 +394,13 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void When_ValidationPlan_params_array_ctor_receives_null_it_throws()
+        public void When_ValidationPlan_params_array_ctor_receives_null_it_throws()
         {
             Assert.Throws<ArgumentNullException>(() => new ValidationPlan<string>((IValidationRule<string>[]) null));
         }
 
         [Test]
-        public virtual void ValidationPlan_collection_initializer_can_be_used_to_combine_plans()
+        public void ValidationPlan_collection_initializer_can_be_used_to_combine_plans()
         {
             var plan1 = new ValidationPlan<string>
             {
@@ -425,7 +426,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void ValidationPlan_collection_initializer_can_be_used_to_combine_plans_with_error_code_assignments()
+        public void ValidationPlan_collection_initializer_can_be_used_to_combine_plans_with_error_code_assignments()
         {
             var notNull = new ValidationPlan<string> { Validate.That<string>(s => s != null) };
             var notEmpty = new ValidationPlan<string> { Validate.That<string>(s => s.Length > 0) };
@@ -444,7 +445,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void ValidationPlan_collection_initializer_can_be_used_to_combine_rules()
+        public void ValidationPlan_collection_initializer_can_be_used_to_combine_rules()
         {
             var plan = new ValidationPlan<Species>
             {
@@ -458,7 +459,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void
+        public void
             ValidationPlan_collection_initializer_can_be_used_to_combine_rules_with_error_code_assignments()
         {
             var rule1 = Validate.That<string>(s => s != null);
@@ -499,7 +500,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void Rule_extension_value_from_class_is_available_on_failure()
+        public void Rule_extension_value_from_class_is_available_on_failure()
         {
             var plan = new ValidationPlan<string>
             {
@@ -515,7 +516,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void Rule_extension_value_from_struct_is_available_on_failure()
+        public void Rule_extension_value_from_struct_is_available_on_failure()
         {
             var plan = new ValidationPlan<string>
             {
@@ -531,7 +532,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void Cloned_and_forked_rule_with_different_extension_class()
+        public void Cloned_and_forked_rule_with_different_extension_class()
         {
             var rule = Validate.That<string>(s => s.Contains("some string that s will never contain"));
 
@@ -549,7 +550,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void When_operator_expression_overload_does_not_mutate_rule()
+        public void When_operator_expression_overload_does_not_mutate_rule()
         {
             var baseRule = Validate.That<IEnumerable<int>>(ints => false);
             var rule1 = new ValidationPlan<IEnumerable<int>> { baseRule.When(ints => ints.Count() < 6) };
@@ -563,7 +564,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void When_operator_rule_overload_does_not_mutate_rule()
+        public void When_operator_rule_overload_does_not_mutate_rule()
         {
             var baseRule = Validate.That<IEnumerable<int>>(ints => false);
 
@@ -581,7 +582,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void With_operator_does_not_mutate_rule()
+        public void With_operator_does_not_mutate_rule()
         {
             var baseRule = Validate.That<IEnumerable<int>>(ints => false);
             var rule1 = new ValidationPlan<IEnumerable<int>> { baseRule.With("hello") };
@@ -595,7 +596,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void With_operator_does_not_mutate_plan()
+        public void With_operator_does_not_mutate_plan()
         {
             var baseRule = Validate.That<IEnumerable<int>>(ints => false);
             var rule1 = new ValidationPlan<IEnumerable<int>> { baseRule }.With("hello");

@@ -6,24 +6,12 @@ namespace Its.Validation.UnitTests.TestClasses
 {
     public class Family
     {
-        public Family()
-        {
-        }
-
-        public Family(string name)
-        {
-            Name = name;
-        }
-
         public List<Genus> Genuses { get; set; }
 
-        public virtual Order Order { get; set; }
+        public Order Order { get; set; }
 
-        public virtual string Name { get; set; }
+        public string Name { get; set; }
 
-        public override string ToString()
-        {
-            return Name;
-        }
+        public override string ToString() => Name;
     }
 }

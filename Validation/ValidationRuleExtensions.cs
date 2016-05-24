@@ -17,27 +17,22 @@ namespace Its.Validation.Configuration
         /// <param name="rule"> The rule. </param>
         /// <param name="getDetails"> A handler which will be called if an exception of <typeparamref name="TException" /> is thrown by the rule. </param>
         /// <returns> </returns>
-        public static ValidationRule<TTarget> Handle<TException, TTarget>(this ValidationRule<TTarget> rule,
-                                                                          Action<TException> getDetails = null)
-            where TException : Exception
-        {
-            return Validate.That<TTarget>(t =>
-            {
-                try
+        public static ValidationRule<TTarget> Handle<TException, TTarget>(
+            this ValidationRule<TTarget> rule,
+            Action<TException> getDetails = null)
+            where TException : Exception =>
+                Validate.That<TTarget>(t =>
                 {
-                    return rule.Check(t);
-                }
-                catch (TException ex)
-                {
-                    if (getDetails != null)
+                    try
                     {
-                        getDetails(ex);
+                        return rule.Check(t);
                     }
-                    return false;
-                }
-            }
-                );
-        }
+                    catch (TException ex)
+                    {
+                        getDetails?.Invoke(ex);
+                        return false;
+                    }
+                });
 
         /// <summary>
         ///   Executes the specified rule and returns a <see cref="ValidationReport" /> .
@@ -48,6 +43,11 @@ namespace Its.Validation.Configuration
         /// <returns> </returns>
         public static ValidationReport Execute<TTarget>(this IValidationRule<TTarget> rule, TTarget target)
         {
+            if (rule == null)
+            {
+                throw new ArgumentNullException(nameof(rule));
+            }
+
             var plan = rule as ValidationPlan<TTarget>;
             if (plan != null)
             {
@@ -61,6 +61,11 @@ namespace Its.Validation.Configuration
         /// </summary>
         public static IEnumerable<IValidationRule<TTarget>> Preconditions<TTarget>(this IValidationRule<TTarget> rule)
         {
+            if (rule == null)
+            {
+                throw new ArgumentNullException(nameof(rule));
+            }
+
             var validationRule = rule as ValidationRule<TTarget>;
             if (validationRule == null || validationRule.preconditions == null)
             {

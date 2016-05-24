@@ -8,7 +8,10 @@ namespace Its.Validation.UnitTests.TestClasses
 {
     public class Class
     {
-        public virtual Phylum Phylum { get; set; }
-        public virtual string Name { get; set; }
+        public Phylum Phylum { get; set; }
+
+        public string Name { get; set; }
+
+        public override string ToString() => Name;
     }
 }

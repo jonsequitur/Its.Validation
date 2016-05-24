@@ -28,7 +28,7 @@ namespace Its.Validation
         {
             if (evaluations == null)
             {
-                throw new ArgumentNullException("evaluations");
+                throw new ArgumentNullException(nameof(evaluations));
             }
             this.evaluations = evaluations
                 .NonInternal()
@@ -38,63 +38,30 @@ namespace Its.Validation
         /// <summary>
         ///   Gets all of the <see cref="RuleEvaluation" /> s that were executed.
         /// </summary>
-        public IEnumerable<RuleEvaluation> Evaluations
-        {
-            get
-            {
-                return evaluations;
-            }
-        }
+        public IEnumerable<RuleEvaluation> Evaluations => evaluations;
 
         /// <summary>
         ///   Gets the <see cref="SuccessfulEvaluation" /> s.
         /// </summary>
-        public IEnumerable<SuccessfulEvaluation> Successes
-        {
-            get
-            {
-                return evaluations.OfType<SuccessfulEvaluation>().NonInternal();
-            }
-        }
+        public IEnumerable<SuccessfulEvaluation> Successes => evaluations.OfType<SuccessfulEvaluation>().NonInternal();
 
         /// <summary>
         ///   Gets the <see cref="FailedEvaluation" /> s.
         /// </summary>
-        public IEnumerable<FailedEvaluation> Failures
-        {
-            get
-            {
-                return evaluations.OfType<FailedEvaluation>().NonInternal();
-            }
-        }
+        public IEnumerable<FailedEvaluation> Failures => evaluations.OfType<FailedEvaluation>().NonInternal();
 
         /// <summary>
         ///   Gets the rules that were executed in the creation of the report.
         /// </summary>
-        public IEnumerable<IValidationRule> RulesExecuted
-        {
-            get
-            {
-                return evaluations.Select(e => e.Rule);
-            }
-        }
+        public IEnumerable<IValidationRule> RulesExecuted => evaluations.Select(e => e.Rule);
 
         /// <summary>
         ///   Gets a value indicating whether the report contains any failed evaluations.
         /// </summary>
         /// <value> <c>true</c> if this instance has failures; otherwise, <c>false</c> . </value>
-        public bool HasFailures
-        {
-            get
-            {
-                return Failures.Any();
-            }
-        }
+        public bool HasFailures => Failures.Any();
 
-        internal static ValidationReport FromScope(ValidationScope scope)
-        {
-            return new ValidationReport(scope.Evaluations);
-        }
+        internal static ValidationReport FromScope(ValidationScope scope) => new ValidationReport(scope.Evaluations);
 
         /// <summary>
         ///   Returns a <see cref="System.String" /> that represents this instance.
@@ -110,12 +77,8 @@ namespace Its.Validation
                                     .Select(e => "    " + e.ToString())
                                     .Where(msg => !string.IsNullOrWhiteSpace(msg));
 
-            return string.Format(
-                "{0} failed (out of {1} evaluations)\n  Failed:\n{2}\n  Passed:\n{3}",
-                Failures.Count(),
-                Evaluations.Count(),
-                string.Join(Environment.NewLine, failed),
-                string.Join(Environment.NewLine, passed));
+            return
+                $"{Failures.Count()} failed (out of {Evaluations.Count()} evaluations)\n  Failed:\n{string.Join(Environment.NewLine, failed)}\n  Passed:\n{string.Join(Environment.NewLine, passed)}";
         }
     }
 }

@@ -25,18 +25,13 @@ namespace Its.Validation
             {
                 while (enumerator.MoveNext())
                 {
-                    var current = enumerator.Current;
                 }
             }
         }
 
         internal static void ForEach<TSource>(this IEnumerable<TSource> source, Action<TSource> action)
         {
-            if (source == null)
-            {
-                return;
-            }
-            source.Do(action).Run();
+            source?.Do(action).Run();
         }
     }
 }

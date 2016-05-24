@@ -92,21 +92,9 @@ namespace Its.Validation
             }
         }
 
-        internal ValidationScope Parent
-        {
-            get
-            {
-                return parent;
-            }
-        }
+        internal ValidationScope Parent => parent;
 
-        internal IValidationRule[] Rules
-        {
-            get
-            {
-                return ruleStack;
-            }
-        }
+        internal IValidationRule[] Rules => ruleStack;
 
         private IEnumerable<ValidationScope> Scopes()
         {
@@ -194,47 +182,23 @@ namespace Its.Validation
         /// <summary>
         ///   Gets the evaluations that have taken place in the current scope, including its child scopes.
         /// </summary>
-        public IEnumerable<RuleEvaluation> Evaluations
-        {
-            get
-            {
-                return evaluations.NonInternal();
-            }
-        }
+        public IEnumerable<RuleEvaluation> Evaluations => evaluations.NonInternal();
 
         /// <summary>
         ///   Gets the <see cref="FailedEvaluation" /> s collected within the current scope and all child scopes.
         /// </summary>
         /// <value> The <see cref="FailedEvaluation" /> s resulting from the execution of all rules within the current validation operation. </value>
-        public IEnumerable<FailedEvaluation> Failures
-        {
-            get
-            {
-                return AllFailures.Where(f => !f.IsInternal);
-            }
-        }
+        public IEnumerable<FailedEvaluation> Failures => AllFailures.Where(f => !f.IsInternal);
 
         /// <summary>
         ///   Gets all <see cref="FailedEvaluation" /> s collected within the current scope and all child scopes, including those marked as internal.
         /// </summary>
-        internal IEnumerable<FailedEvaluation> AllFailures
-        {
-            get
-            {
-                return evaluations.OfType<FailedEvaluation>();
-            }
-        }
+        internal IEnumerable<FailedEvaluation> AllFailures => evaluations.OfType<FailedEvaluation>();
 
         /// <summary>
         ///   Gets the <see cref="SuccessfulEvaluation" /> s collected within the current scope and all child scopes.
         /// </summary>
-        public IEnumerable<SuccessfulEvaluation> Successes
-        {
-            get
-            {
-                return evaluations.OfType<SuccessfulEvaluation>();
-            }
-        }
+        public IEnumerable<SuccessfulEvaluation> Successes => evaluations.OfType<SuccessfulEvaluation>();
 
         internal bool HaltsOnFirstFailure
         {
@@ -248,10 +212,7 @@ namespace Its.Validation
             }
         }
 
-        internal bool ShouldHalt()
-        {
-            return HaltsOnFirstFailure && Failures.Any();
-        }
+        internal bool ShouldHalt() => HaltsOnFirstFailure && Failures.Any();
 
         /// <summary>
         ///   The dispose.
@@ -286,22 +247,13 @@ namespace Its.Validation
 
         private void NotifyRuleEvaluated(RuleEvaluation evaluation)
         {
-            var handler = RuleEvaluated;
-            if (handler != null)
-            {
-                handler(this, new RuleEvaluatedEventArgs(evaluation));
-            } // also add to parent if there is one
+            RuleEvaluated?.Invoke(this, new RuleEvaluatedEventArgs(evaluation));
 
-            if (parent != null)
-            {
-                parent.NotifyRuleEvaluated(evaluation);
-            }
+            parent?.NotifyRuleEvaluated(evaluation);
         }
 
-        internal bool HasFailed(object target, IValidationRule ruleTemp)
-        {
-            return AllFailures.Any(f => !f.IsInternal && Equals(ruleTemp, f.Rule) && Equals(target, f.Target));
-        }
+        internal bool HasFailed(object target, IValidationRule ruleTemp) => 
+            AllFailures.Any(f => !f.IsInternal && Equals(ruleTemp, f.Rule) && Equals(target, f.Target));
 
         /// <summary>
         ///   The flush parameters.
@@ -325,15 +277,20 @@ namespace Its.Validation
 #if DEBUG
         private static readonly DebugMessageGenerator debugMessageGenerator = new DebugMessageGenerator();
 
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public override string ToString()
         {
-            // TODO: (ToString) is this worth making official in some capacity?
             var sb = new StringBuilder();
 
             // parent scopes
             if (parent != null)
             {
-                sb.AppendLine(string.Format("[parent: {0}]", parent));
+                sb.AppendLine($"[parent: {parent}]");
             }
 
             // self

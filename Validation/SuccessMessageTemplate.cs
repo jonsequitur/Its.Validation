@@ -14,13 +14,17 @@ namespace Its.Validation
 
         public SuccessMessageTemplate(string value) : this(_ => value)
         {
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
         }
 
         public SuccessMessageTemplate(Func<SuccessfulEvaluation, string> buildMessage)
         {
             if (buildMessage == null)
             {
-                throw new ArgumentNullException("buildMessage");
+                throw new ArgumentNullException(nameof(buildMessage));
             }
             this.buildMessage = buildMessage;
         }
@@ -29,11 +33,9 @@ namespace Its.Validation
         {
             var successfulEvaluation = evaluation as SuccessfulEvaluation ?? new SuccessfulEvaluation();
             var template = buildMessage(successfulEvaluation);
-            if (evaluation == null)
-            {
-                return template;
-            }
-            return MessageGenerator.Detokenize(template, successfulEvaluation.Parameters);
+            return evaluation == null
+                       ? template
+                       : MessageGenerator.Detokenize(template, successfulEvaluation.Parameters);
         }
     }
 }

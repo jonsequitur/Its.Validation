@@ -13,7 +13,7 @@ namespace Its.Validation
         {
             if (buildMessage == null)
             {
-                throw new ArgumentNullException("buildMessage");
+                throw new ArgumentNullException(nameof(buildMessage));
             }
             this.buildMessage = buildMessage;
         }

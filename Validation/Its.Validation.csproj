@@ -49,6 +49,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>bin\Debug\Its.Validation.xml</DocumentationFile>
     <Prefer32Bit>false</Prefer32Bit>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -94,6 +95,7 @@
     <Compile Include="AsyncValidationRule.cs" />
     <Compile Include="FailureMessageTemplate{T}.cs" />
     <Compile Include="MemberPath.cs" />
+    <Compile Include="MessageContext.cs" />
     <Compile Include="MessageGenerator.cs" />
     <Compile Include="IValidationMessageGenerator.cs" />
     <Compile Include="IValidationRule.cs">

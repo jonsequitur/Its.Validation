@@ -6,7 +6,6 @@ using System.Linq;
 using FluentAssertions;
 using Its.Validation.Configuration;
 using Its.Validation.UnitTests.TestClasses;
-using Moq;
 using NUnit.Framework;
 
 namespace Its.Validation.UnitTests
@@ -21,26 +20,23 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void Static_default_MessageGenerator_is_not_null()
+        public void Static_default_MessageGenerator_is_not_null()
         {
             Assert.IsNotNull(MessageGenerator.Current);
         }
 
         [Test]
-        public virtual void ValidationFailures_use_MessageGenerator_assigned_to_ValidationPlan()
+        public void ValidationFailures_use_MessageGenerator_assigned_to_ValidationPlan()
         {
-            var messageGenerator = new Mock<IValidationMessageGenerator>();
-            messageGenerator.Setup(g => g.GetMessage(It.IsAny<FailedEvaluation>())).Returns("result");
+            var messageGenerator = new MessageTemplate("result");
 
-            var plan = new ValidationPlan<string>(messageGenerator.Object);
+            var plan = new ValidationPlan<string>(messageGenerator);
             // always fail
             plan.AddRule(s => false);
 
             var failure = plan.Execute("test").Failures.First();
 
-            Console.WriteLine(failure.Message);
-
-            messageGenerator.VerifyAll();
+            failure.Message.Should().Be("result");
         }
 
         [Test]
@@ -50,11 +46,10 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void Can_customize_message_at_the_framework_level()
+        public void Can_customize_message_at_the_framework_level()
         {
-            var messageGenerator = new Mock<IValidationMessageGenerator>();
-            messageGenerator.Setup(g => g.GetMessage(It.IsAny<FailedEvaluation>())).Returns("here i am");
-            MessageGenerator.Current = messageGenerator.Object;
+            var messageGenerator = new MessageTemplate("here i am");
+            MessageGenerator.Current = messageGenerator;
 
             var rule = Validate.That<Individual>(i => i.Species.ExtinctionDate < DateTime.Now);
             var failure = new FailedEvaluation(new Species(), rule);
@@ -63,17 +58,15 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void Can_customize_message_differently_for_the_same_rule_in_different_plans()
+        public void Can_customize_message_differently_for_the_same_rule_in_different_plans()
         {
-            var generator1 = new Mock<IValidationMessageGenerator>();
-            generator1.Setup(g => g.GetMessage(It.IsAny<FailedEvaluation>())).Returns("one");
-            var generator2 = new Mock<IValidationMessageGenerator>();
-            generator2.Setup(g => g.GetMessage(It.IsAny<FailedEvaluation>())).Returns("two");
-
+            IValidationMessageGenerator generator1 = new MessageTemplate("one");
+            IValidationMessageGenerator generator2 = new MessageTemplate("two");
+         
             var rule = Validate.That<string>(s => false);
 
-            var plan1 = new ValidationPlan<string>(generator1.Object);
-            var plan2 = new ValidationPlan<string>(generator2.Object);
+            var plan1 = new ValidationPlan<string>(generator1);
+            var plan2 = new ValidationPlan<string>(generator2);
 
             plan1.AddRule(rule);
             plan2.AddRule(rule);
@@ -146,7 +139,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void Same_rule_in_different_plans_can_have_different_error_codes()
+        public void Same_rule_in_different_plans_can_have_different_error_codes()
         {
             var rule = Validate.That<string>(
                 s => !s.Contains("A") & !s.Contains("B"));
@@ -172,7 +165,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void MemberPath_can_be_set_differently_for_the_same_rule_in_different_contexts()
+        public void MemberPath_can_be_set_differently_for_the_same_rule_in_different_contexts()
         {
             var nameNotEmpty =
                 Validate.That<Species>(s => !string.IsNullOrEmpty(s.Name));
@@ -304,7 +297,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void ErrorCode_can_be_set_differently_for_the_same_rule_in_different_contexts()
+        public void ErrorCode_can_be_set_differently_for_the_same_rule_in_different_contexts()
         {
             var nameNotEmpty =
                 Validate
@@ -332,7 +325,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void When_multiple_specifications_of_error_code_are_made_last_one_overrides()
+        public void When_multiple_specifications_of_error_code_are_made_last_one_overrides()
         {
             var individualIsNamed = Validate.That<Individual>(i => i.Name != null).WithErrorCode("not named (1)");
 
@@ -356,7 +349,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void Validation_parameters_can_be_written_to_error_message()
+        public void Validation_parameters_can_be_written_to_error_message()
         {
             var rule = Validate
                 .That<int>(i => i < 42.As("value"))
@@ -368,7 +361,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void Validation_parameters_can_be_transformed_and_then_written_to_error_message()
+        public void Validation_parameters_can_be_transformed_and_then_written_to_error_message()
         {
             var rule = Validate
                 .That<int>(i => i < 42.As("value", j => "forty-two"))
@@ -380,7 +373,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void Multiple_validation_parameters_can_be_written_to_error_message_with_params_out_of_order()
+        public void Multiple_validation_parameters_can_be_written_to_error_message_with_params_out_of_order()
         {
             var rule = Validate
                 .That<int>(i => i < 365.As("end") & i > 0.As("start"))
@@ -394,7 +387,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void Multiple_validation_parameters_can_be_written_to_error_message_with_params_in_order()
+        public void Multiple_validation_parameters_can_be_written_to_error_message_with_params_in_order()
         {
             var rule = Validate
                 .That<int>(i => i > 0.As("start") & i < 365.As("end"))
@@ -406,7 +399,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void Parameters_can_be_written_to_message_nested_validations()
+        public void Parameters_can_be_written_to_message_nested_validations()
         {
             var cat = new Species("cat");
             cat.Individuals.Add(new Individual { Name = "Felix", Species = cat });
@@ -433,7 +426,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void Parameters_are_retained_by_failure_after_scope_exits()
+        public void Parameters_are_retained_by_failure_after_scope_exits()
         {
             var plan = new ValidationPlan<Species>
             {
@@ -448,7 +441,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void Parameters_are_retained_by_failure_after_nested_scope_exits()
+        public void Parameters_are_retained_by_failure_after_nested_scope_exits()
         {
             var plan = new ValidationPlan<Species>
             {
@@ -467,7 +460,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void Parameters_are_collected_from_nested_scopes()
+        public void Parameters_are_collected_from_nested_scopes()
         {
             var plan = new ValidationPlan<Species>
             {
@@ -486,7 +479,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void Parameters_can_be_written_to_message_nested_validations_multiple_failures()
+        public void Parameters_can_be_written_to_message_nested_validations_multiple_failures()
         {
             var cat = new Species("cat");
             cat.Individuals.Add(new Individual { Name = "Felix", Species = cat });
@@ -513,7 +506,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void Parameters_are_flushed_after_rule_evaluation_when_rule_passes()
+        public void Parameters_are_flushed_after_rule_evaluation_when_rule_passes()
         {
             var plan = new ValidationPlan<string>
             {
@@ -527,12 +520,11 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void IValidationRule_when_check_passes_no_failures_are_added_to_report()
+        public void IValidationRule_when_check_passes_no_failures_are_added_to_report()
         {
-            var rule = new Mock<IValidationRule<string>>();
-            rule.Setup(r => r.Check(It.IsAny<string>())).Returns(true);
+            var rule = Validate.That<string>(_ => true);
 
-            var plan = new ValidationPlan<string> { rule.Object };
+            var plan = new ValidationPlan<string> { rule };
 
             var report = plan.Execute("");
 
@@ -540,17 +532,16 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void IValidationRule_when_check_fails_failures_are_added_to_report()
+        public void IValidationRule_when_check_fails_failures_are_added_to_report()
         {
-            var rule = new Mock<IValidationRule<string>>();
-            rule.Setup(r => r.Check(It.IsAny<string>())).Returns(false);
+            var rule = Validate.That<string>(_ => false);
 
-            var plan = new ValidationPlan<string> { rule.Object };
+            var plan = new ValidationPlan<string> { rule };
 
             var report = plan.Execute("");
 
             Assert.AreEqual(1, report.Failures.Count());
-            Assert.IsTrue(report.Failures.First().Rule == rule.Object);
+            Assert.IsTrue(report.Failures.First().Rule == rule);
         }
 
         [Test]
@@ -577,7 +568,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void Parameter_formatting_can_be_specified_using_colon_notation_for_dates()
+        public void Parameter_formatting_can_be_specified_using_colon_notation_for_dates()
         {
             var date = DateTime.Now;
             var dateStr = date.ToString("D");
@@ -593,28 +584,22 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void ValidationReport_contains_rules_that_were_called()
+        public void ValidationReport_contains_rules_that_were_called()
         {
             var plan = new ValidationPlan<string>();
             for (var i = 0; i < 10; i++)
             {
-                var rule = new Mock<IValidationRule<string>>();
-                rule.Setup(r => r.Check(It.IsAny<string>()))
-                    .Returns(true);
-                plan.AddRule(rule.Object);
+                var rule = Validate.That<string>(_ => true);
+                plan.AddRule(rule);
             }
 
             var report = plan.Execute(string.Empty);
 
             Assert.AreEqual(10, report.RulesExecuted.Count());
-            foreach (IValidationRule<string> rule in report.RulesExecuted)
-            {
-                Mock.Get(rule).VerifyAll();
-            }
         }
 
         [Test]
-        public virtual void ValidationReport_contains_nested_rules_that_were_called()
+        public void ValidationReport_contains_nested_rules_that_were_called()
         {
             var plan = new ValidationPlan<Species>
             {
@@ -633,7 +618,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void ValidationReport_contains_referenced_rules_that_were_called()
+        public void ValidationReport_contains_referenced_rules_that_were_called()
         {
             var hasName = Validate.That<Individual>(ind => ind.Name != null);
             var plan = new ValidationPlan<Species>
@@ -703,7 +688,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void New_ValidationFailure_parameters_property_is_not_null()
+        public void New_ValidationFailure_parameters_property_is_not_null()
         {
             var failure = new FailedEvaluation();
             Assert.IsNotNull(failure.Parameters);
@@ -746,7 +731,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void ValidationReport_Evaluations_does_not_report_internal_successes()
+        public void ValidationReport_Evaluations_does_not_report_internal_successes()
         {
             var report = new ValidationReport(new[] { new SuccessfulEvaluation { IsInternal = true } });
 

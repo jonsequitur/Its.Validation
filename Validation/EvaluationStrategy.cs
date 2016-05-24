@@ -15,15 +15,13 @@ namespace Its.Validation
         {
             if (evaluate == null)
             {
-                throw new ArgumentNullException("evaluate");
+                throw new ArgumentNullException(nameof(evaluate));
             }
             this.evaluate = evaluate;
         }
 
-        public virtual bool Evaluate(IEnumerable<IValidationRule<T>> rules, T target, ValidationScope scope)
-        {
-            return evaluate(rules, target, scope);
-        }
+        public virtual bool Evaluate(IEnumerable<IValidationRule<T>> rules, T target, ValidationScope scope) =>
+            evaluate(rules, target, scope);
 
         public static EvaluationStrategy<T> HaltOnFirstFailure = new EvaluationStrategy<T>(
             (rules, target, scope) => rules.All(rule => rule.Check(target, scope)));

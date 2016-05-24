@@ -34,14 +34,6 @@ namespace Its.Validation
         /// <returns>
         /// A <see cref="System.String"/> that represents this instance.
         /// </returns>
-        public override string ToString()
-        {
-            if (Value != null)
-            {
-                return Value.ToString();
-            }
-
-            return string.Empty;
-        }
+        public override string ToString() => Value?.ToString() ?? string.Empty;
     }
 }

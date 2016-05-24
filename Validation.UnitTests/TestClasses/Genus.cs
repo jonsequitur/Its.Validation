@@ -6,36 +6,12 @@ namespace Its.Validation.UnitTests.TestClasses
 {
     public class Genus
     {
-        private List<Species> species = new List<Species>();
+        public IList<Species> Species { get; set; } = new List<Species>();
 
-        public Genus()
-        {
-        }
+        public Family Family { get; set; }
 
-        public Genus(string name)
-        {
-            Name = name;
-        }
+        public string Name { get; set; }
 
-        public virtual IList<Species> Species
-        {
-            get
-            {
-                return species;
-            }
-            set
-            {
-                species = new List<Species>(value);
-            }
-        }
-
-        public virtual Family Family { get; set; }
-
-        public virtual string Name { get; set; }
-
-        public override string ToString()
-        {
-            return Name;
-        }
+        public override string ToString() => Name;
     }
 }

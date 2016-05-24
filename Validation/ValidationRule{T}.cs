@@ -34,7 +34,7 @@ namespace Its.Validation
         {
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(nameof(condition));
             }
             this.condition = condition;
         }
@@ -88,7 +88,7 @@ namespace Its.Validation
             }
             set
             {
-                Set<IValidationMessageGenerator>(value);
+                Set(value);
             }
         }
 
@@ -159,55 +159,57 @@ namespace Its.Validation
 
         protected bool CheckPreconditions(ValidationScope scope, TTarget target)
         {
-            if (preconditions != null)
+            if (preconditions == null)
             {
-                // check previously-evaluated preconditions. any occurrence of the same combination of rule and target will short circuit the current operation.
-                if (scope.AllFailures.Any(f =>
-                                          preconditions.Any(pre =>
-                                                            Equals(f.Target, target) &&
-                                                            ValidationRuleComparer.Instance.Equals(pre, f.Rule))))
-                {
-                    // this failure indicates a short-circuited precondition. this mechanism identifies preconditions of preconditions.
-                    // TODO: (CheckPreconditions) mark the failure so that it can be identified as such for debug purposes
-                    scope.AddEvaluation(new FailedEvaluation(target, this)
-                    {
-                        IsInternal = true
-                    });
-                    return true;
-                }
+                return false;
+            }
 
-                // check unevaluated preconditions
-                foreach (var rule in preconditions)
+            // check previously-evaluated preconditions. any occurrence of the same combination of rule and target will short circuit the current operation.
+            if (scope.AllFailures.Any(f =>
+                                      preconditions.Any(pre =>
+                                                        Equals(f.Target, target) &&
+                                                        ValidationRuleComparer.Instance.Equals(pre, f.Rule))))
+            {
+                // this failure indicates a short-circuited precondition. this mechanism identifies preconditions of preconditions.
+                // TODO: (CheckPreconditions) mark the failure so that it can be identified as such for debug purposes
+                scope.AddEvaluation(new FailedEvaluation(target, this)
                 {
-                    var tempRule = rule;
-                    if (!scope.Evaluations.Any(ex => Equals(ex.Target, target) &&
-                                                     ValidationRuleComparer.Instance.Equals(ex.Rule, tempRule)))
+                    IsInternal = true
+                });
+                return true;
+            }
+
+            // check unevaluated preconditions
+            foreach (var rule in preconditions)
+            {
+                var tempRule = rule;
+                if (!scope.Evaluations.Any(ex => Equals(ex.Target, target) &&
+                                                 ValidationRuleComparer.Instance.Equals(ex.Rule, tempRule)))
+                {
+                    using (var internalScope = new ValidationScope { Rule = this })
                     {
-                        using (var internalScope = new ValidationScope { Rule = this })
+                        internalScope.RuleEvaluated += (s, e) =>
                         {
-                            internalScope.RuleEvaluated += (s, e) =>
+                            var failure = e.RuleEvaluation as FailedEvaluation;
+                            if (failure != null)
                             {
-                                var failure = e.RuleEvaluation as FailedEvaluation;
-                                if (failure != null)
-                                {
-                                    failure.IsInternal = true;
-                                }
-                            };
-
-                            if (!rule.Check(target))
-                            {
-                                return true;
+                                failure.IsInternal = true;
                             }
+                        };
+
+                        if (!rule.Check(target))
+                        {
+                            return true;
                         }
+                    }
 
-                        // finally we have to check if the rule's preconditions were in turn unsatisfied.
-                        var vRule = rule as ValidationRule<TTarget>;
-                        if (vRule != null)
+                    // finally we have to check if the rule's preconditions were in turn unsatisfied.
+                    var vRule = rule as ValidationRule<TTarget>;
+                    if (vRule != null)
+                    {
+                        if (vRule.CheckPreconditions(scope, target))
                         {
-                            if (vRule.CheckPreconditions(scope, target))
-                            {
-                                return true;
-                            }
+                            return true;
                         }
                     }
                 }
@@ -218,10 +220,8 @@ namespace Its.Validation
         /// <summary>
         ///   Performs the actual rule check.
         /// </summary>
-        protected virtual bool PerformCheck(TTarget target, ValidationScope scope = null)
-        {
-            return condition(target);
-        }
+        protected virtual bool PerformCheck(TTarget target, ValidationScope scope = null) =>
+            condition(target);
 
         /// <summary>
         ///   Returns a <see cref="System.String" /> that represents this instance.
@@ -245,9 +245,7 @@ namespace Its.Validation
                 return failureMessage.GetMessage(currentRuleEvaluation);
             }
 
-            var value = Result<ErrorCode<string>>();
-            var code = value != null ? value.Value : "";
-            return code;
+            return Result<ErrorCode<string>>()?.Value ?? "";
         }
 
         protected internal virtual ValidationRule<TTarget> Clone()
@@ -280,13 +278,7 @@ namespace Its.Validation
             return default(T);
         }
 
-        protected internal virtual string Message
-        {
-            get
-            {
-                return ToString();
-            }
-        }
+        protected internal virtual string Message => ToString();
 
         [DebuggerStepThrough]
         internal class ValidationRuleComparer : IEqualityComparer<IValidationRule>
@@ -316,7 +308,7 @@ namespace Its.Validation
             public int GetHashCode(IValidationRule irule)
             {
                 var rule = irule as ValidationRule<TTarget>;
-                if (rule != null && rule.condition != null)
+                if (rule?.condition != null)
                 {
                     return rule.condition.GetHashCode();
                 }

@@ -10,3 +10,4 @@ _ReSharper.*
 *.xml
 *.ncrunchproject
 /_NCrunch_Its.Validation/StoredText
+/_NCrunch_Its.Validation

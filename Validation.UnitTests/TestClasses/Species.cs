@@ -10,11 +10,8 @@ namespace Its.Validation.UnitTests.TestClasses
     [DebuggerStepThrough]
     public class Species : IOrganism
     {
-        private List<Individual> individuals = new List<Individual>();
-
         public Species()
         {
-            Name = "";
         }
 
         public Species(string name)
@@ -22,40 +19,19 @@ namespace Its.Validation.UnitTests.TestClasses
             Name = name;
         }
 
-        public virtual Genus Genus { get; set; }
+        public Genus Genus { get; set; }
 
-        public virtual string Name { get; set; }
+        public string Name { get; set; }
 
-        public virtual List<Individual> Individuals
-        {
-            get
-            {
-                return individuals;
-            }
-            set
-            {
-                individuals = value;
-            }
-        }
+        public List<Individual> Individuals { get; set; } = new List<Individual>();
 
-        public virtual bool IsExtinct { get; set; }
+        public bool IsExtinct { get; set; }
 
-        public virtual DateTime? ExtinctionDate { get; set; }
+        public DateTime? ExtinctionDate { get; set; }
 
-        public virtual int NumberOfLegs { get; set; }
+        public int NumberOfLegs { get; set; }
 
-        public virtual string SpeciesName
-        {
-            get
-            {
-                return Name;
-            }
-        }
-
-        public override string ToString()
-        {
-            return Name;
-        }
+        public string SpeciesName => Name;
 
         public Species AddIndividual(Individual individual)
         {
@@ -63,5 +39,7 @@ namespace Its.Validation.UnitTests.TestClasses
             individual.Species = this;
             return this;
         }
+
+        public override string ToString() => Name;
     }
 }

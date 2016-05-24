@@ -92,14 +92,6 @@ namespace Its.Validation
             return formattedMsg.ToString();
         }
 
-        public static string Format<T>(this T objectToFormat)
-        {
-            if (objectToFormat == null)
-            {
-                return "";
-            }
-
-            return objectToFormat.ToString();
-        }
+        public static string Format<T>(this T objectToFormat) => objectToFormat?.ToString() ?? "";
     }
 }

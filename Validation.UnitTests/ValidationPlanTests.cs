@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Its.Validation.Configuration;
 using Its.Validation.UnitTests.TestClasses;
-using Moq;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 
@@ -77,31 +76,31 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public void ValidationPlan_Task_executes_all_rules()
+        public async Task ValidationPlan_Task_executes_all_rules()
         {
-            var rule1 = new Mock<IValidationRule<Species>>();
-            rule1.Setup(r => r.Check(It.IsAny<Species>(), It.IsAny<ValidationScope>())).Returns(true);
-            var rule2 = new Mock<IValidationRule<Species>>();
-            rule2.Setup(r => r.Check(It.IsAny<Species>(), It.IsAny<ValidationScope>())).Returns(false);
-            var rule3 = new Mock<IValidationRule<Species>>();
-            rule3.Setup(r => r.Check(It.IsAny<Species>(), It.IsAny<ValidationScope>())).Returns(false);
+            var rule1WasCalled = false;
+            var rule1 = Validate.That<Species>(_ => rule1WasCalled = true);
+            var rule2WasCalled = false;
+            var rule2 = Validate.That<Species>(_ => rule2WasCalled = true);
+            var rule3WasCalled = false;
+            var rule3 = Validate.That<Species>(_ => rule3WasCalled = true);
+
             var plan = new ValidationPlan<Species>
             {
-                rule1.Object,
-                rule2.Object,
-                rule3.Object
+                rule1,
+                rule2,
+                rule3
             };
 
-            var task = plan.ExecuteAsync(new Species());
-            task.Wait();
+            await plan.ExecuteAsync(new Species());
 
-            rule1.VerifyAll();
-            rule2.VerifyAll();
-            rule3.VerifyAll();
+            Assert.That(rule1WasCalled);
+            Assert.That(rule2WasCalled);
+            Assert.That(rule3WasCalled);
         }
 
         [Test]
-        public virtual void Iterative_nested_rules_are_all_executed()
+        public void Iterative_nested_rules_are_all_executed()
         {
             var innerRule = Validate.That<Individual>(i => false);
 
@@ -120,7 +119,7 @@ namespace Its.Validation.UnitTests
         }
 
         [Test]
-        public virtual void Iterative_nested_tasks_are_all_executed()
+        public void Iterative_nested_tasks_are_all_executed()
         {
             var innerRule = Validate.That<Individual>(i => false);
             var plan = new ValidationPlan<Species>();

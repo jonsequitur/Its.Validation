@@ -55,7 +55,7 @@ namespace Its.Validation
         ///   Gets or sets the rule against which the validation check failed.
         /// </summary>
         /// <value> The rule against which the validation check failed. </value>
-        public IValidationRule Rule { get; private set; }
+        public IValidationRule Rule { get; }
 
         /// <summary>
         ///   Gets or sets the target of the validation check.
@@ -103,14 +103,8 @@ namespace Its.Validation
         /// <remarks>
         ///   This template may contain tokens intended to be filled in with parameters collected during the rule evaluation.
         /// </remarks>
-        public virtual string MessageTemplate
-        {
-            get
-            {
-                return Result<MessageTemplate, string>(template => template.GetMessage(this),
-                                                    orElse: () => string.Empty);
-            }
-        }
+        public virtual string MessageTemplate => Result<MessageTemplate, string>(template => template.GetMessage(this),
+                                                                                 orElse: () => string.Empty);
 
         /// <summary>
         ///   Gets the member path.
@@ -144,60 +138,51 @@ namespace Its.Validation
                 value = Rule.Result<T>();
             }
 
-            if (value == null && ruleStack != null)
-            {
-                value = ruleStack
-                    .Select(r => r.Result<T>())
-                    .FirstOrDefault(e => e != null);
-            }
-
-            return value;
+            return value != null
+                       ? value
+                       : ResultFromRuleStack<T>();
         }
 
-        internal IEnumerable<IValidationRule> RuleStack
-        {
-            get
-            {
-                return ruleStack;
-            }
-        }
+        internal IEnumerable<IValidationRule> RuleStack => ruleStack;
 
         internal bool IsInternal { get; set; }
 
         protected TReturn Result<TExtension, TReturn>(Func<TExtension, TReturn> ifWasSet, Func<TReturn> orElse)
             where TExtension : class
         {
+            TExtension value;
             if (Rule != null)
             {
-                var value = Result<TExtension>();
+                value = Result<TExtension>();
                 if (value != null)
                 {
                     return ifWasSet(value);
                 }
             }
 
-            if (ruleStack != null)
+            value = ResultFromRuleStack<TExtension>();
+
+            return value != null
+                       ? ifWasSet(value)
+                       : orElse();
+        }
+
+        private TExtension ResultFromRuleStack<TExtension>()
+        {
+            if (ruleStack == null)
             {
-                var value = ruleStack
-                    .Select(r => r.Result<TExtension>())
-                    .FirstOrDefault(e => e != null);
-
-                if (value != null)
-                {
-                    return ifWasSet(value);
-                }
+                return default(TExtension);
             }
 
-            return orElse();
+            return ruleStack
+                .Select(r => r.Result<TExtension>())
+                .FirstOrDefault(e => e != null);
         }
 
         /// <summary>
         ///   Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns> A <see cref="System.String" /> that represents this instance. </returns>
-        public override string ToString()
-        {
-            return Message;
-        }
+        public override string ToString() => Message;
     }
 }
